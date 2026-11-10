@@ -139,6 +139,22 @@ body.page-mac { overflow-x: hidden; }
 .bloc .ico { width: 48px; height: 48px; border-radius: 16px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent-text); font-size: 24px; }
 .bloc p { margin: 0; color: var(--txt2); }
 .bloc .btn { align-self: flex-start; margin-top: auto; }
+
+/* Liste d'attente : champ + Valider avec le script, le bouton mail sans lui */
+.liste-form { display: none; margin-top: auto; }
+.js .liste-form { display: block; }
+.js .liste-mail { display: none; }
+.liste-champ { display: flex; gap: 8px; padding: 6px; border-radius: 999px; background: var(--bg3); border: 1px solid var(--brd); transition: border-color .2s var(--ease); }
+.liste-champ:focus-within { border-color: var(--accent-text); }
+.liste-champ input { flex: 1; min-width: 0; padding: 0 16px; border: 0; background: none; color: var(--txt); font: inherit; font-size: 16px; }
+.liste-champ input:focus { outline: none; }
+.liste-champ input::placeholder { color: var(--txt2); opacity: .7; }
+.bloc .liste-champ .btn { margin-top: 0; padding: 11px 20px; }
+.liste-message { min-height: 1.5em; margin: 8px 0 0 !important; padding-left: 16px; font-size: 15px; }
+.liste-message.ok { color: var(--accent-text); }
+.liste-message.err { color: var(--txt); }
+.liste-piege { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.cache-visuel { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .montant { display: flex; align-items: baseline; gap: 8px; }
 .montant b { font-family: var(--verre-titre); font-size: 56px; font-weight: 700; letter-spacing: -.04em; line-height: 1; }
 .montant span { color: var(--txt2); }
@@ -168,4 +184,7 @@ body.page-mac { overflow-x: hidden; }
   .bloc { padding: 24px; }
   .montant b { font-size: 44px; }
   .page-mac .bloc .btn { align-self: stretch; }
+  .liste-champ { flex-direction: column; border-radius: 20px; }
+  .liste-champ input { padding: 10px 12px; }
+  .page-mac .bloc .liste-champ .btn { justify-content: center; }
 }

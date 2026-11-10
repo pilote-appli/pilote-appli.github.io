@@ -8,7 +8,7 @@
 <link rel="canonical" href="https://pilote-appli.github.io/mac.html">
 <meta name="theme-color" content="#0d0d12">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; base-uri 'self'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; connect-src https://script.google.com https://script.googleusercontent.com; base-uri 'self'; form-action 'none'; object-src 'none'">
 <link rel="icon" href="assets/icone.png" type="image/png">
 <link rel="preload" href="assets/fonts/onest-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/newsreader-latin.woff2" as="font" type="font/woff2" crossorigin>
@@ -149,11 +149,20 @@
         <div class="bloc verre apparait">
           <span class="ico"><i class="ph ph-envelope-simple" aria-hidden="true"></i></span>
           <h3>Être prévenu à sa sortie</h3>
-          <p>Envoyez un mail, même vide&nbsp;: vous serez prévenu le jour où la version signée sortira. Votre adresse ne sert à rien d'autre.</p>
-          <a class="btn btn-plein" href="mailto:pilote.appli+mac@gmail.com?subject=Liste%20d'attente%20%3A%20Pilote%20sign%C3%A9%20pour%20Mac&amp;body=Bonjour%2C%0A%0APr%C3%A9venez-moi%20quand%20la%20version%20de%20Pilote%20sign%C3%A9e%20par%20Apple%20sortira.%0A">
+          <p>Laissez votre adresse&nbsp;: vous serez prévenu le jour où la version signée sortira. Elle ne sert à rien d'autre.</p>
+          <form class="liste-form" id="liste-form" data-adresse="https://script.google.com/macros/s/AKfycbxgyz8-95Tx1HnMwlYKHxXcsij8Juv_EipEdjygGfo-hQJrZCptd0xuBwHeMEAY5aDo/exec" novalidate>
+            <label class="cache-visuel" for="liste-email">Votre adresse mail</label>
+            <div class="liste-champ">
+              <input id="liste-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="vous@exemple.fr" required maxlength="254">
+              <button class="btn btn-plein" type="submit"><i class="ph ph-bell-ringing" aria-hidden="true"></i>Valider</button>
+            </div>
+            <input class="liste-piege" name="site" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
+            <p class="liste-message" id="liste-message" role="status" aria-live="polite"></p>
+          </form>
+          <a class="btn btn-plein liste-mail" href="mailto:pilote.appli+mac@gmail.com?subject=Liste%20d'attente%20%3A%20Pilote%20sign%C3%A9%20pour%20Mac&amp;body=Bonjour%2C%0A%0APr%C3%A9venez-moi%20quand%20la%20version%20de%20Pilote%20sign%C3%A9e%20par%20Apple%20sortira.%0A">
             <i class="ph ph-bell-ringing" aria-hidden="true"></i>Rejoindre la liste d'attente
           </a>
-          <p class="petit">Le bouton ouvre votre messagerie. Sinon, écrivez à <a href="mailto:pilote.appli+mac@gmail.com">pilote.appli+mac@gmail.com</a>.</p>
+          <p class="petit">Vous pouvez aussi écrire à <a href="mailto:pilote.appli+mac@gmail.com">pilote.appli+mac@gmail.com</a>, même un mail vide.</p>
         </div>
 
         <div class="bloc verre apparait">

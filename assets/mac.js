@@ -20,6 +20,44 @@
       });
     });
 
+    // Liste d'attente : l'adresse part vers le script Google de pilote.appli,
+    // qui l'ajoute à un tableur. En cas d'échec, on renvoie vers le mail.
+    var form = document.getElementById("liste-form");
+    if (form) {
+      var champ = document.getElementById("liste-email");
+      var message = document.getElementById("liste-message");
+      var bouton = form.querySelector('button[type="submit"]');
+      var dire = function (texte, classe) { message.textContent = texte; message.className = "liste-message " + classe; };
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var adresse = champ.value.trim();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(adresse)) {
+          dire("Cette adresse ne semble pas complète.", "err");
+          champ.focus();
+          return;
+        }
+        bouton.disabled = true;
+        dire("Envoi…", "");
+        var corps = new URLSearchParams();
+        corps.append("email", adresse);
+        corps.append("site", form.elements.site.value);
+        fetch(form.getAttribute("data-adresse"), { method: "POST", body: corps })
+          .then(function (r) { return r.json(); })
+          .then(function (rep) {
+            if (rep && rep.ok) {
+              dire("C'est noté ! Vous serez prévenu à la sortie.", "ok");
+              champ.value = "";
+            } else {
+              dire("Cette adresse ne semble pas valide.", "err");
+            }
+          })
+          .catch(function () {
+            dire("L'envoi n'a pas marché. Écrivez-nous plutôt à l'adresse ci-dessous.", "err");
+          })
+          .then(function () { bouton.disabled = false; });
+      });
+    }
+
     document.querySelectorAll('a[aria-disabled="true"]').forEach(function (lien) {
       lien.addEventListener("click", function (e) { e.preventDefault(); });
     });
