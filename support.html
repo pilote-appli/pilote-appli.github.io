@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Support de Pilote</title>
+<meta name="description" content="Installer Pilote sur Windows ou Mac, le mettre à jour et signaler un problème.">
+<link rel="canonical" href="https://pilote-appli.github.io/support.html">
+<meta name="theme-color" content="#191613">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; base-uri 'self'; form-action 'none'; object-src 'none'">
+<link rel="icon" href="assets/icone.png" type="image/png">
+<link rel="preload" href="assets/fonts/onest-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/newsreader-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/phosphor/phosphor.css">
+<script src="assets/theme.js"></script>
+</head>
+<body>
+<a class="evite" href="#contenu">Aller au contenu</a>
+<header class="entete">
+  <div class="wrap">
+    <a class="marque" href="./"><img src="assets/icone.png" alt="" width="32" height="32">Pilote</a>
+    <nav class="nav" aria-label="Pages du site">
+      <a href="./">Accueil</a>
+      <a href="support.html" aria-current="page">Support</a>
+      <a href="faq.html">Questions</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <button class="theme-btn" type="button" aria-label="Changer de thème"><i class="ph ph-sun" aria-hidden="true"></i><i class="ph ph-moon" aria-hidden="true"></i></button>
+  </div>
+</header>
+
+<main id="contenu">
+  <section class="page-titre">
+    <div class="wrap etroit">
+      <p class="surtitre"><i class="ph ph-lifebuoy" aria-hidden="true"></i>Support</p>
+      <h1>Un souci avec <em>Pilote</em>&#8239;?</h1>
+      <p class="chapo">La plupart des problèmes se règlent par une mise à jour. Si ce n'est pas le cas, Pilote prépare pour vous le message à nous envoyer.</p>
+    </div>
+  </section>
+
+  <div class="wrap etroit texte">
+    <h2>Avant d'écrire</h2>
+    <ol class="etapes">
+      <li><strong>Vérifiez que Pilote est à jour.</strong> La version du Microsoft Store se met à jour par le Store. Les autres versions le proposent d'elles-mêmes au démarrage, et dans <kbd>Paramètres › Mises à jour</kbd>, où se trouve aussi l'historique de chaque version.</li>
+      <li><strong>Regardez les <a href="faq.html">questions fréquentes</a></strong>&nbsp;: données, sauvegardes, code PIN, montres et connexions.</li>
+    </ol>
+
+    <h2>Signaler un problème</h2>
+    <div class="encadre">
+      <h3><i class="ph ph-bug" aria-hidden="true"></i> Depuis Pilote</h3>
+      <p>Ouvrez <kbd>Paramètres › Données &amp; application › Signaler un problème</kbd>. Pilote prépare un mail avec sa version, votre système et ses derniers plantages, sans aucune de vos données. Vous voyez tout ce qu'il contient et vous le relisez avant que votre messagerie l'envoie.</p>
+    </div>
+    <p>Si Pilote ne s'ouvre plus, écrivez à <a href="mailto:pilote.appli+probleme@gmail.com">pilote.appli+probleme@gmail.com</a> en indiquant&nbsp;:</p>
+    <ul>
+      <li>la version de Pilote, et d'où vous l'avez installé (Microsoft Store ou GitHub)&nbsp;;</li>
+      <li>votre système&nbsp;: Windows 10, Windows 11 ou macOS&nbsp;;</li>
+      <li>ce que vous faisiez, et le message affiché s'il y en a un.</li>
+    </ul>
+    <p>N'envoyez jamais vos fichiers de données, ni une capture où l'on voit vos montants&nbsp;: nous n'en avons pas besoin.</p>
+
+    <h2>Installer Pilote</h2>
+    <h3><i class="ph ph-windows-logo" aria-hidden="true"></i> Windows</h3>
+    <p>Le plus simple est le <a href="https://apps.microsoft.com/detail/9NLZ93TP5HD3">Microsoft Store</a>&nbsp;: l'application y est vérifiée par Microsoft et se met à jour toute seule. Il faut Windows 10 ou 11.</p>
+    <p>Vous pouvez aussi télécharger <code>Pilote_Setup.exe</code> sur <a href="https://github.com/pilote-appli/pilote/releases/latest">la page des versions</a>. Au premier lancement, Windows peut afficher «&nbsp;Windows a protégé votre ordinateur&nbsp;»&nbsp;: cliquez sur <kbd>Informations complémentaires</kbd>, puis <kbd>Exécuter quand même</kbd>.</p>
+
+    <h3><i class="ph ph-apple-logo" aria-hidden="true"></i> Mac</h3>
+    <ol class="etapes">
+      <li>Téléchargez <code>Pilote_Mac.zip</code> sur <a href="https://github.com/pilote-appli/pilote/releases/latest">la page des versions</a> (Mac à puce Apple).</li>
+      <li>Ouvrez le fichier, puis glissez Pilote dans le dossier Applications.</li>
+      <li>Lancez Pilote une première fois. macOS le bloque, car l'application n'est pas encore signée par Apple&nbsp;: fermez l'avertissement.</li>
+      <li>Ouvrez <kbd>Réglages Système › Confidentialité et sécurité</kbd>, descendez jusqu'à Pilote et cliquez sur <kbd>Ouvrir quand même</kbd>. Ce n'est à faire qu'une fois.</li>
+    </ol>
+
+    <h2>Une idée pour Pilote&#8239;?</h2>
+    <p>Le bouton <kbd>Une idée&#8239;?</kbd>, à côté de votre prénom sur l'accueil de Pilote, prépare un mail. Vous pouvez aussi écrire à <a href="mailto:pilote.appli+idee@gmail.com">pilote.appli+idee@gmail.com</a>. Toutes les autres adresses sont sur la page <a href="contact.html">Contact</a>.</p>
+  </div>
+</main>
+
+<footer class="pied">
+  <div class="wrap">
+    <span>© 2026 Pilote</span>
+    <nav aria-label="Liens du pied de page">
+      <a href="support.html">Support</a>
+      <a href="faq.html">Questions fréquentes</a>
+      <a href="contact.html">Contact</a>
+      <a href="confidentialite.html">Confidentialité</a>
+      <a href="https://github.com/pilote-appli/pilote">Code sur GitHub</a>
+    </nav>
+  </div>
+</footer>
+</body>
+</html>
