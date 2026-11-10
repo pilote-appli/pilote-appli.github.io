@@ -1,0 +1,171 @@
+/* Page « Pilote sur Mac » : style « Verre » de l'application (fond de taches
+   à la couleur d'accent, surfaces translucides, grands arrondis, police du
+   système), accent prune #9c4a7a. Chargée après style.css, seulement par mac.html.
+   Les cartes qui défilent n'ont pas de flou (backdrop-filter) : le fond est déjà
+   flou, et une carte graphique modeste peinerait. */
+
+body.page-mac {
+  --verre-police: -apple-system, BlinkMacSystemFont, "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --verre-titre: -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+  --radl: 22px; --radxl: 28px;
+  --ease: cubic-bezier(.2, .7, .2, 1);
+  --ease-spring: cubic-bezier(.34, 1.4, .64, 1);
+  /* sombre (par défaut) */
+  --bg: #0d0d12;
+  --txt: #f5f5f7; --txt2: #b4b4bb;
+  --brd: rgba(255, 255, 255, .10); --brd2: rgba(255, 255, 255, .16);
+  --bg2: #1c1c21; --bg3: rgba(118, 118, 128, .22);
+  --accent-text: #d79bbd;
+  --accent-soft: rgba(156, 74, 122, .26);
+  --verre: rgba(44, 44, 52, .52);
+  --verre-fort: rgba(36, 36, 42, .82);
+  --verre-brd: rgba(255, 255, 255, .12);
+  --verre-lum: inset 0 1px 0 rgba(255, 255, 255, .14), inset 0 -1px 0 rgba(255, 255, 255, .04);
+  --sh: 0 1px 2px rgba(0, 0, 0, .30), 0 12px 32px -12px rgba(0, 0, 0, .60);
+  --sh-md: 0 2px 6px rgba(0, 0, 0, .40), 0 26px 54px -18px rgba(0, 0, 0, .75);
+  --fond-1: color-mix(in srgb, var(--accent) 30%, var(--bg));
+  --fond-2: color-mix(in srgb, var(--accent) 19%, var(--bg));
+  --fond-3: color-mix(in srgb, var(--accent) 11%, var(--bg));
+  font-family: var(--verre-police);
+  background: var(--bg);
+  background-image: none;
+}
+:root[data-theme="light"] body.page-mac {
+  --bg: #eceef3;
+  --txt: #1d1d1f; --txt2: #55555c;
+  --brd: rgba(0, 0, 0, .08); --brd2: rgba(0, 0, 0, .14);
+  --bg2: #fbfbfd; --bg3: rgba(118, 118, 128, .12);
+  --accent-text: #8a3f6b;
+  --accent-soft: rgba(156, 74, 122, .14);
+  --verre: rgba(255, 255, 255, .58);
+  --verre-fort: rgba(250, 250, 253, .80);
+  --verre-brd: rgba(255, 255, 255, .70);
+  --verre-lum: inset 0 1px 0 rgba(255, 255, 255, .90), inset 0 -1px 0 rgba(255, 255, 255, .25);
+  --sh: 0 1px 2px rgba(0, 0, 0, .04), 0 10px 30px -12px rgba(30, 30, 60, .18);
+  --sh-md: 0 2px 6px rgba(0, 0, 0, .06), 0 24px 50px -18px rgba(30, 30, 60, .30);
+  --fond-1: color-mix(in srgb, var(--accent) 34%, var(--bg));
+  --fond-2: color-mix(in srgb, var(--accent) 22%, var(--bg));
+  --fond-3: color-mix(in srgb, var(--accent) 13%, var(--bg));
+}
+
+/* Le fond Verre : un voile de l'accent et sept taches douces, fixes, derrière tout */
+body.page-mac::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(34% 40% at 8% 12%,  var(--fond-1), transparent 72%),
+    radial-gradient(30% 36% at 46% 4%,  var(--fond-2), transparent 72%),
+    radial-gradient(32% 40% at 90% 18%, var(--fond-1), transparent 72%),
+    radial-gradient(36% 42% at 28% 56%, var(--fond-2), transparent 72%),
+    radial-gradient(34% 40% at 72% 58%, var(--fond-1), transparent 72%),
+    radial-gradient(36% 40% at 10% 96%, var(--fond-2), transparent 72%),
+    radial-gradient(38% 42% at 62% 100%, var(--fond-1), transparent 72%),
+    linear-gradient(160deg, var(--fond-3), var(--bg) 55%, var(--fond-3));
+}
+body.page-mac { overflow-x: hidden; }
+
+/* En-tête du site, en verre (surface fixe : le flou y est permis) */
+.page-mac .entete {
+  background: var(--verre-fort);
+  -webkit-backdrop-filter: blur(28px) saturate(180%); backdrop-filter: blur(28px) saturate(180%);
+  border-bottom-color: var(--verre-brd);
+}
+.page-mac .theme-btn { background: var(--verre); border-color: var(--verre-brd); border-radius: 999px; }
+.page-mac .nav a { border-radius: 999px; }
+.page-mac .pied { border-top-color: var(--brd); }
+
+/* Titres : police du système, comme Pilote en Verre */
+.page-mac main h1, .page-mac main h2, .page-mac main h3 { font-family: var(--verre-titre); font-weight: 700; }
+.page-mac main h1 { letter-spacing: -.035em; line-height: 1.04; font-size: clamp(40px, 6vw, 64px); }
+.page-mac main h1 em, .page-mac main h2 em { font-style: normal; color: var(--accent-text); }
+.page-mac main h2 { letter-spacing: -.025em; line-height: 1.1; }
+.page-mac main h3 { font-size: 18px; letter-spacing: -.01em; margin-bottom: 6px; }
+.page-mac code { font-size: .85em; }
+
+/* Boutons en pilule */
+.page-mac .btn { border-radius: 999px; font-weight: 600; transition: transform .25s var(--ease-spring), box-shadow .2s var(--ease), background-color .2s var(--ease); }
+.page-mac .btn-plein { box-shadow: 0 8px 24px -10px var(--accent); }
+.page-mac .btn-plein:hover { transform: translateY(-1px); }
+.page-mac .btn-verre { background: var(--verre); color: var(--txt); border-color: var(--verre-brd); box-shadow: var(--verre-lum), var(--sh); }
+.page-mac .btn-verre:hover { background: var(--verre-fort); }
+.page-mac .btn[aria-disabled="true"] { opacity: .55; cursor: not-allowed; }
+
+/* Surface de verre */
+.verre { background: var(--verre); border: 1px solid var(--verre-brd); border-radius: var(--radxl); box-shadow: var(--verre-lum), var(--sh); }
+
+/* — Accroche — */
+.mac-accroche { display: grid; grid-template-columns: 1fr 1.15fr; gap: 48px; align-items: center; padding: 72px 0 40px; }
+.mac-accroche h1 { margin: 16px 0; }
+.pastille { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px 4px 8px; border-radius: 999px; font-size: 13px; font-weight: 600; background: var(--accent-soft); color: var(--accent-text); }
+.pastille .point { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.mac-accroche .chapo { font-size: 18px; margin-bottom: 0; }
+.mac-accroche .boutons { margin-top: 24px; }
+.prerequis { margin-top: 20px; font-size: 14px; color: var(--txt2); display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.prerequis span { display: inline-flex; align-items: center; gap: 6px; }
+.fenetre { margin: 0; }
+.fenetre img { display: block; width: 100%; height: auto; border-radius: 14px; border: 1px solid var(--brd); box-shadow: var(--sh-md); }
+:root:not([data-theme="light"]) .fenetre .clair, :root[data-theme="light"] .fenetre .sombre { display: none; }
+.legende { font-size: 13px; color: var(--txt2); margin-top: 10px; text-align: center; }
+
+/* — Sections — */
+.mac-section { padding: 48px 0; scroll-margin-top: 80px; }
+.mac-section .surtitre { margin-bottom: 8px; }
+.mac-section .intro { color: var(--txt2); max-width: 40em; margin-bottom: 28px; }
+
+/* — Tuto — */
+.mac-etapes { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; counter-reset: etape; }
+.mac-etape { display: grid; grid-template-columns: 48px 1fr; gap: 16px; padding: 24px; counter-increment: etape; }
+.mac-etape::before { content: counter(etape); width: 40px; height: 40px; border-radius: 14px; display: grid; place-items: center; background: var(--accent); color: var(--on-accent); font-weight: 700; font-size: 18px; }
+.mac-etape p { margin: 0; color: var(--txt2); hyphens: auto; }
+.mac-etape p + p { margin-top: 8px; }
+.mac-etape strong { color: var(--txt); font-weight: 600; }
+.mac-etape .ph-caret-right { font-size: 12px; color: var(--txt2); }
+.capture { margin: 16px 0 0; max-width: 340px; }
+.capture img { display: block; border-radius: 12px; border: 1px solid var(--brd); box-shadow: var(--sh); }
+.capture figcaption { font-size: 13px; color: var(--txt2); margin-top: 8px; }
+.note { display: flex; gap: 12px; align-items: flex-start; margin-top: 12px; padding: 12px 16px; border-radius: 16px; background: var(--accent-soft); color: var(--txt); font-size: 15px; }
+.note .ph { color: var(--accent-text); font-size: 20px; flex: none; margin-top: 2px; }
+
+.terminal { margin-top: 24px; padding: 24px; }
+.terminal h3 { display: flex; align-items: center; gap: 8px; }
+.terminal p { margin: 0; color: var(--txt2); font-size: 15px; }
+.ligne { display: flex; align-items: flex-start; gap: 8px; margin: 12px 0; padding: 12px 12px 12px 16px; border-radius: 14px; background: var(--bg3); border: 1px solid var(--brd); }
+.ligne code { flex: 1; min-width: 0; background: none; border: 0; padding: 0; font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+.copier { flex: none; width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--brd); background: var(--verre-fort); color: var(--txt); cursor: pointer; display: grid; place-items: center; font-size: 17px; }
+.copier:hover { color: var(--accent-text); }
+
+/* — Version signée — */
+.duo { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.bloc { padding: 32px; display: flex; flex-direction: column; gap: 12px; }
+.bloc .ico { width: 48px; height: 48px; border-radius: 16px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent-text); font-size: 24px; }
+.bloc p { margin: 0; color: var(--txt2); }
+.bloc .btn { align-self: flex-start; margin-top: auto; }
+.montant { display: flex; align-items: baseline; gap: 8px; }
+.montant b { font-family: var(--verre-titre); font-size: 56px; font-weight: 700; letter-spacing: -.04em; line-height: 1; }
+.montant span { color: var(--txt2); }
+.a-completer { align-self: flex-start; padding: 2px 8px; border-radius: 6px; font-size: 13px; font-weight: 600; background: rgba(255, 159, 10, .2); color: var(--txt); }
+
+/* — Questions — */
+.questions { display: grid; gap: 12px; }
+.page-mac .questions details { border: 1px solid var(--verre-brd); }
+.page-mac .questions summary { padding: 20px 24px; font-weight: 600; }
+.page-mac .questions summary::after { font-family: var(--verre-titre); font-weight: 300; }
+.page-mac .questions .rep { padding: 0 24px 20px; }
+
+/* — Apparition au défilement (transform et opacity seulement) — */
+.js .apparait { opacity: 0; transform: translateY(16px); transition: opacity .6s var(--ease), transform .6s var(--ease); }
+.js .apparait.vu { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .js .apparait { opacity: 1; transform: none; transition: none; }
+}
+
+/* — Téléphone — */
+@media (max-width: 820px) {
+  .mac-accroche { grid-template-columns: 1fr; gap: 32px; padding-top: 48px; }
+  .duo { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .mac-etape { grid-template-columns: 1fr; gap: 12px; padding: 20px; }
+  .bloc { padding: 24px; }
+  .montant b { font-size: 44px; }
+  .page-mac .bloc .btn { align-self: stretch; }
+}
