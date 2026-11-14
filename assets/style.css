@@ -1,5 +1,5 @@
 /* Site de Pilote : style « Verre » de l'application (comme Pilote depuis la
-   4.4.56) : fond de taches à la couleur d'accent prune #9c4a7a, surfaces
+   4.4.56) : fond de taches à la couleur d'accent fuchsia #c026d3, surfaces
    translucides avec un liseré de lumière, grands arrondis, pilules, police du
    système (Segoe UI Variable sous Windows, SF Pro sur Mac). Icônes servies par
    le site lui-même : aucune requête vers un autre serveur, comme l'application.
@@ -16,7 +16,7 @@
   --rad: 12px; --radl: 22px; --radxl: 28px;
   --ease: cubic-bezier(.2, .7, .2, 1);
   --ease-spring: cubic-bezier(.34, 1.4, .64, 1);
-  --accent: #9c4a7a;
+  --accent: #c026d3;
   --on-accent: #fff8fc;
 
   --bg: #0d0d12;
@@ -26,8 +26,8 @@
   --brd2: rgba(255, 255, 255, .16);
   --txt: #f5f5f7;
   --txt2: #b4b4bb;
-  --accent-text: #d79bbd;
-  --accent-soft: rgba(156, 74, 122, .26);
+  --accent-text: #e59cee;
+  --accent-soft: rgba(192, 38, 211, .26);
   --verre: rgba(44, 44, 52, .52);
   --verre-fort: rgba(36, 36, 42, .82);
   --verre-brd: rgba(255, 255, 255, .12);
@@ -47,8 +47,8 @@
   --brd2: rgba(0, 0, 0, .14);
   --txt: #1d1d1f;
   --txt2: #55555c;
-  --accent-text: #8a3f6b;
-  --accent-soft: rgba(156, 74, 122, .14);
+  --accent-text: #901c9e;
+  --accent-soft: rgba(192, 38, 211, .14);
   --verre: rgba(255, 255, 255, .58);
   --verre-fort: rgba(250, 250, 253, .80);
   --verre-brd: rgba(255, 255, 255, .70);
@@ -252,7 +252,7 @@ details .rep li { margin-bottom: 6px; }
   @keyframes monte { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 }
 
-/* Pilou, la mascotte de Pilote (ourson prune, lunettes d'aviateur). Images SVG
+/* Pilou, la mascotte de Pilote (ourson fuchsia, lunettes d'aviateur). Images SVG
    dans assets/pilou/, dessin identique à celui de l'app. */
 .hero-grille { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 32px; align-items: center; }
 .pilou-hero { width: clamp(180px, 22vw, 260px); height: auto; }
