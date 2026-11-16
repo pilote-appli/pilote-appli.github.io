@@ -20,6 +20,126 @@
 <meta name="theme-color" content="#0d0d12">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; base-uri 'self'; form-action 'none'; object-src 'none'">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "FAQPage",
+ "mainEntity": [
+  {
+   "@type": "Question",
+   "name": "Où Pilote enregistre-t-il mes données ?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Dans des fichiers sur votre ordinateur, et nulle part ailleurs : version Microsoft Store : C:\\Users\\<votre nom>\\Pilote\\Donnees ; version téléchargée sur GitHub : le dossier Donnees à côté de l'application ; Mac : ~/Library/Application Support/Pilote/Donnees. Le chemin exact est aussi affiché dans les Paramètres de Pilote."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Désinstaller Pilote efface-t-il mes données ?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Non. Vos données restent dans leur dossier ; vous les retrouvez si vous réinstallez Pilote. Pour les supprimer, effacez ce dossier vous-même, ou utilisez Paramètres › Données & application › Effacer toutes mes données avant de désinstaller."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Comment passer sur un autre ordinateur, ou de la version GitHub à celle du Store ?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Par la sauvegarde : dans Paramètres › Sauvegarde, envoyez vos données sur une clé USB, puis, dans la nouvelle installation, restaurez-les depuis cette clé. Les deux versions ne partagent pas automatiquement leurs données."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Pilote fonctionne-t-il sans Internet ?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Oui. Sans connexion, Pilote affiche les derniers cours qu'il connaît et vous pouvez tout saisir. Internet ne sert qu'aux cours de bourse, aux mises à jour et aux connexions que vous avez choisies (Gmail, iCloud, montres)."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Pilote est-il gratuit ?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Oui, sans publicité et sans compte."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Plusieurs personnes peuvent-elles utiliser Pilote sur le même ordinateur ?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Oui. Chaque utilisateur a ses propres données, ses réglages, son thème et, s'il le veut, son code PIN. Rien n'est partagé de l'un à l'autre."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "J'ai oublié mon code PIN.",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Le code PIN ne se récupère pas depuis l'application. Il empêche une autre personne d'ouvrir vos données dans Pilote sur un ordinateur partagé ; il ne les chiffre pas. Écrivez-nous depuis la page Contact : nous vous expliquerons comment le retirer."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "J'ai oublié le mot de passe de mes sauvegardes.",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Elles sont alors perdues. Ce mot de passe chiffre vos archives et n'est gardé nulle part, ni par Pilote ni par nous : personne ne peut les rouvrir sans lui. Vos données dans Pilote, elles, ne sont pas touchées ; faites une nouvelle sauvegarde avec un nouveau mot de passe."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Comment relier ma boîte Gmail (Actus) ?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Pilote lit votre boîte avec un mot de passe d'application de Google, pas avec votre mot de passe habituel. Il faut que la validation en deux étapes soit activée sur votre compte Google. La section Actus de Pilote vous guide pas à pas. Pilote ne fait que lire la boîte : il n'y envoie rien."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Comment relier mon agenda iCloud ?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Avec votre identifiant Apple et un mot de passe pour app, créé sur account.apple.com, dans Connexion et sécurité. Pilote écrit dans un agenda les notes et rappels que vous lui demandez, et lit vos autres agendas sans jamais les modifier."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Quelles montres Pilote sait-il lire ?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Garmin : avec la clé API personnelle que vous créez dans les paramètres de votre compte Garmin Connect. Coros : en vous connectant à votre compte Coros sur la page de connexion que Pilote ouvre. Toute autre montre : en important les fichiers.fit de vos séances. Pilote lit vos séances, votre sommeil et votre forme du jour. Il n'écrit jamais rien dans votre compte."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Où sont gardés mes codes d'accès ?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Sur votre ordinateur, chiffrés par le système (Windows, ou le Trousseau sur Mac). Ils ne servent qu'à parler directement à Google, Apple, Garmin ou Coros depuis votre ordinateur."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "D'où viennent les cours de bourse ?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Pilote les demande sur Internet en n'envoyant que le code des titres que vous suivez, jamais vos montants ni vos quantités. Les cours sont rafraîchis toutes les minutes au plus, et peuvent avoir un léger retard sur le marché."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Puis-je importer les relevés de ma banque ?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Oui, pour le PEA, les comptes-titres et la crypto. Le fichier CSV ou Excel de votre banque donne le meilleur résultat ; le PDF marche aussi. Vous voyez les opérations lues avant de les ajouter. Si votre banque n'est pas bien reconnue, dites-le nous."
+   }
+  }
+ ]
+}
+</script>
 <link rel="icon" href="assets/icone.png" type="image/png">
 <link rel="stylesheet" href="assets/style.css">
 <link rel="stylesheet" href="assets/phosphor/phosphor.css">
