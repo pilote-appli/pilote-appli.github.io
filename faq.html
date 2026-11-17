@@ -27,6 +27,14 @@
  "mainEntity": [
   {
    "@type": "Question",
+   "name": "Sur Chromebook, l'installation échoue avec « 404 Not Found ».",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "La liste des logiciels du Linux de votre Chromebook n'est plus à jour : il cherche des versions que Debian a retirées. Ouvrez l'application Terminal du Chromebook, choisissez penguin, tapez « sudo apt update » puis « sudo apt full-upgrade -y », et relancez l'installation de Pilote_Linux.deb d'un double-clic."
+   }
+  },
+  {
+   "@type": "Question",
    "name": "Où Pilote enregistre-t-il mes données ?",
    "acceptedAnswer": {
     "@type": "Answer",
@@ -173,6 +181,22 @@
   </section>
 
   <div class="wrap etroit">
+    <div class="faq-groupe">
+      <h2>Installation</h2>
+      <details>
+        <summary>Sur Chromebook, l'installation échoue avec «&nbsp;404 Not Found&nbsp;».</summary>
+        <div class="rep">
+          <p>Le message cite des adresses <span class="chemin">deb.debian.org</span> et des éléments «&nbsp;not (yet) available&nbsp;». Pilote n'y est pour rien&nbsp;: la liste des logiciels du Linux de votre Chromebook n'est plus à jour, et il cherche des versions que Debian a retirées depuis.</p>
+          <p>Ouvrez l'application <strong>Terminal</strong> du Chromebook, choisissez <strong>penguin</strong>, puis tapez ces deux lignes, l'une après l'autre&nbsp;:</p>
+          <ul>
+            <li><code>sudo apt update</code></li>
+            <li><code>sudo apt full-upgrade -y</code></li>
+          </ul>
+          <p>Relancez ensuite l'installation de <code>Pilote_Linux.deb</code> d'un double-clic&nbsp;: elle passera.</p>
+        </div>
+      </details>
+    </div>
+
     <div class="faq-groupe">
       <h2>Vos données</h2>
       <details>
