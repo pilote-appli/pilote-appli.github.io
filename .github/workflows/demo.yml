@@ -99,8 +99,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r pilote/requirements.txt playwright==1.48.0
 
+      # La fin de la sortie part aussi en annotation : lisible sur la page du
+      # run et par l'API sans etre connecte (le journal, lui, demande un compte)
       - name: Fabriquer la demo
-        run: python pilote/build/demo/fabriquer_demo.py site/demo
+        shell: pwsh
+        run: |
+          $env:PYTHONIOENCODING = "utf-8"
+          python pilote/build/demo/fabriquer_demo.py site/demo 2>&1 | Tee-Object -FilePath sortie.txt
+          $code = $LASTEXITCODE
+          $fin = ((Get-Content sortie.txt -Tail 12) -join " | ") -replace "[\r\n]", " "
+          if ($code -ne 0) { Write-Output "::error title=Demo::$fin"; exit 1 }
+          Write-Output "::notice title=Demo::$fin"
 
       - name: Commiter
         shell: pwsh
