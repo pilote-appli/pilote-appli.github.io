@@ -316,6 +316,27 @@ details .rep li { margin-bottom: 6px; }
   @keyframes fondu { from { opacity: 0; } to { opacity: 1; } }
 }
 
+/* Démo de l'accueil : la vraie interface de Pilote dans un cadre (demo.js la
+   met à l'échelle). Plus large que le reste de la page, pour que le texte de
+   l'app reste lisible. Sans JS ou sur un téléphone : la capture de l'accueil. */
+.demo { padding-top: 0; }
+.demo-wrap { max-width: 1320px; }
+.demo-wrap > h2, .demo-wrap > .chapo { max-width: 992px; margin-left: auto; margin-right: auto; }
+.demo-wrap > .chapo { margin-bottom: 24px; }
+.demo-cadre { position: relative; }
+.demo-cadre iframe { display: none; position: absolute; top: 0; left: 0; width: 1366px; height: 740px; border: 0;
+  transform-origin: 0 0; background: var(--bg2); }
+.demo-cadre.demo-active { overflow: hidden; border-radius: 16px; border: 1px solid var(--verre-brd);
+  box-shadow: var(--verre-lum), var(--sh-md); }
+.demo-cadre.demo-active iframe { display: block; }
+.demo-cadre.demo-active .demo-repli { display: none; }
+.demo-repli { max-width: 992px; margin: 0 auto; }
+.demo-repli .petit { margin-top: 12px; text-align: center; }
+.demo-plein { text-align: center; margin: 14px 0 0; font-size: 15px; }
+.demo-plein a { display: inline-flex; align-items: center; gap: 6px; }
+.demo-cadre:not(.demo-active) + .demo-plein { display: none; }
+.demo .appel { max-width: 992px; margin: 40px auto 0; }
+
 /* Cartes des modules qui mènent à une page d'usage */
 a.module { display: block; color: var(--txt); text-decoration: none; transition: background-color .2s var(--ease), transform .25s var(--ease-spring), box-shadow .2s var(--ease); }
 a.module:hover { background: var(--verre-fort); box-shadow: var(--verre-lum), var(--sh-md); transform: translateY(-2px); }
