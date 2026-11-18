@@ -25,6 +25,21 @@ document.addEventListener("DOMContentLoaded", function () {
     cadre.classList.add("demo-active");
     ajuster();
   }
+  // Démo endormie tant qu'on n'a pas cliqué dessus : sinon la molette, dès que
+  // la souris passe au-dessus, fait défiler Pilote au lieu de la page.
+  var reveil = cadre.querySelector(".demo-reveil");
+  function endormir() { if (reveil) reveil.hidden = false; }
+  if (reveil) {
+    reveil.hidden = false;
+    reveil.addEventListener("click", function () {
+      reveil.hidden = true;
+      iframe.focus();
+    });
+    cadre.addEventListener("mouseleave", endormir);
+    // Au clavier : on sort de la démo par Tab, elle se rendort
+    iframe.addEventListener("blur", function () { if (!cadre.matches(":hover")) endormir(); });
+  }
+
   mettreEnPlace();
   window.addEventListener("resize", mettreEnPlace);
   if (ordinateur.addEventListener) ordinateur.addEventListener("change", mettreEnPlace);

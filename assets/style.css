@@ -329,6 +329,17 @@ details .rep li { margin-bottom: 6px; }
 .demo-cadre.demo-active { overflow: hidden; border-radius: 16px; border: 1px solid var(--verre-brd);
   box-shadow: var(--verre-lum), var(--sh-md); }
 .demo-cadre.demo-active iframe { display: block; }
+/* Démo endormie : un calque transparent prend la molette (la page défile) et
+   le premier clic, qui la réveille. Il revient quand la souris sort du cadre. */
+.demo-reveil { position: absolute; inset: 0; z-index: 1; width: 100%; border: 0; padding: 0; margin: 0;
+  background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; font: inherit; }
+.demo-reveil[hidden] { display: none; }
+.demo-reveil span { display: inline-flex; align-items: center; gap: 10px; padding: 14px 28px; border-radius: 999px;
+  font-size: 18px; font-weight: 600; color: var(--on-accent); opacity: .94;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .22), rgba(255, 255, 255, 0) 60%), var(--accent);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .35), 0 10px 28px -8px rgba(0, 0, 0, .55);
+  transition: opacity .2s var(--ease), transform .25s var(--ease-spring); }
+.demo-reveil:hover span, .demo-reveil:focus-visible span { opacity: 1; transform: translateY(-2px); }
 .demo-cadre.demo-active .demo-repli { display: none; }
 /* Téléphone : la capture de l'accueil mène à la démo en plein écran */
 .demo-repli { display: block; max-width: 992px; margin: 0 auto; color: inherit; text-decoration: none; }
