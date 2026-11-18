@@ -330,8 +330,15 @@ details .rep li { margin-bottom: 6px; }
   box-shadow: var(--verre-lum), var(--sh-md); }
 .demo-cadre.demo-active iframe { display: block; }
 .demo-cadre.demo-active .demo-repli { display: none; }
-.demo-repli { max-width: 992px; margin: 0 auto; }
-.demo-repli .petit { margin-top: 12px; text-align: center; }
+/* Téléphone : la capture de l'accueil mène à la démo en plein écran */
+.demo-repli { display: block; max-width: 992px; margin: 0 auto; color: inherit; text-decoration: none; }
+.demo-repli .fenetre-app { display: block; position: relative; }
+.demo-ouvrir { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; border-radius: 999px; white-space: nowrap;
+  font-weight: 600; color: var(--on-accent);
+  background: linear-gradient(180deg, rgba(255, 255, 255, .22), rgba(255, 255, 255, 0) 60%), var(--accent);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .35), 0 10px 28px -8px rgba(0, 0, 0, .55); }
+.demo-repli .petit { display: block; margin-top: 12px; text-align: center; }
 .demo-plein { text-align: center; margin: 14px 0 0; font-size: 15px; }
 .demo-plein a { display: inline-flex; align-items: center; gap: 6px; }
 .demo-cadre:not(.demo-active) + .demo-plein { display: none; }

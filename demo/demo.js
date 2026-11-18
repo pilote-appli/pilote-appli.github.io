@@ -152,8 +152,13 @@
   window.addEventListener("DOMContentLoaded", function () {
     document.documentElement.classList.add("demo-en-ligne");
     var style = document.createElement("style");
-    style.textContent = ".demo-en-ligne .titlebar-btns { display: none !important; }";
+    style.textContent = ".demo-en-ligne .titlebar-btns { display: none !important; }" +
+      // La fenêtre « Tourne ton téléphone » : la page fait 1366 px de large,
+      // réduite à l'écran du téléphone ; zoom la remet à une taille lisible
+      ".demo-tourne { zoom: 2.4; width: 480px !important; z-index: 9600 !important; }" +
+      ".pl-voile.demo-voile { z-index: 9590; }";
     document.head.appendChild(style);
+    tournerTelephone();
 
     // « Revenir à mon profil » n'a pas de sens ici : il devient « Installer Pilote »
     window.quitterExemple = function () { if (window._visiteEcrire) window._visiteEcrire(null); installer(); };
@@ -214,6 +219,33 @@
       setTimeout(proposerVisite, 600);
     }, 100);
   });
+
+  // Téléphone tenu à la verticale (écran tactile, page ouverte seule, pas dans
+  // le cadre du site) : Pilote est en largeur d'ordinateur, mieux vaut tourner.
+  // Une fois par visite ; la fenêtre part seule quand on tourne le téléphone.
+  var verticale = window.matchMedia("(orientation: portrait) and (pointer: coarse)");
+  function tournerTelephone() {
+    if (window.parent !== window || !verticale.matches) return;
+    try { if (sessionStorage.getItem("pilote.demo.tourne")) return; sessionStorage.setItem("pilote.demo.tourne", "1"); } catch (e) {}
+    var voile = document.createElement("div");
+    voile.className = "pl-voile demo-voile";
+    var box = document.createElement("div");
+    box.className = "pl-flot pl-centre demo-tourne";
+    box.setAttribute("role", "dialog");
+    box.setAttribute("aria-label", "Tourne ton téléphone");
+    box.innerHTML = '<span class="pilou" aria-hidden="true">' +
+      (typeof window.pilouSvg === "function" ? window.pilouSvg("salut") : "") + '</span>' +
+      '<div class="pp-bulle"><div class="pl-flot-t">Tourne ton téléphone&#8239;!</div>' +
+      'Pilote est fait pour un écran d’ordinateur. À l’horizontale, tout tient, et tu zoomes avec deux doigts.' +
+      '<div class="pl-flot-acts"><span class="sp"></span>' +
+      '<button type="button" class="btn btn-primary btn-sm" data-ok>Continuer</button></div></div>';
+    document.body.appendChild(voile);
+    document.body.appendChild(box);
+    function fermer() { box.remove(); voile.remove(); }
+    box.querySelector("[data-ok]").onclick = fermer;
+    voile.onclick = fermer;
+    if (verticale.addEventListener) verticale.addEventListener("change", function (e) { if (!e.matches) fermer(); });
+  }
 
   function proposerVisite() {
     if (document.getElementById("pilou-astuce") || typeof window.pilouSvg !== "function") return;
