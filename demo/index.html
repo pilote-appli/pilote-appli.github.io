@@ -1100,6 +1100,8 @@ html.sans-pilou .pilou { display: none; }
 .pl-verre { fill: color-mix(in oklab, var(--accent) 25%, #e4f2fb); fill-opacity: .38; stroke: #c79a55; stroke-width: 4.5; }
 .pl-cuir { fill: none; stroke: color-mix(in oklab, var(--accent) 55%, #2a1822); stroke-width: 8; stroke-linecap: round; }
 .pl-z { fill: var(--txt2); font: italic 500 22px var(--serif); }
+.pl-air { fill: var(--accent); }
+.pl-fil { fill: none; stroke: var(--txt2); stroke-width: 2.2; stroke-linecap: round; opacity: .7; }
 .pilou .pl-yeux { animation: pl-cligne 5s infinite; transform-box: fill-box; transform-origin: center; }
 .pilou .pl-salut { animation: pl-salue 1.6s ease-in-out 3; transform-box: fill-box; transform-origin: 30% 90%; }
 @keyframes pl-cligne { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
@@ -12937,13 +12939,169 @@ const PILOU_TENUES = {
     tete: '<path d="M62 50 Q58 18 82 14 Q100 22 118 14 Q142 18 138 50 Z" fill="#8a7458"/>'
       + '<path d="M62 40 Q100 36 138 40 L138 50 L62 50 Z" fill="#3e3226"/><ellipse cx="100" cy="51" rx="62" ry="9" fill="#7a6549"/>' },
 };
+/* Tenues du 20/11/2026, choisies par Arthur sur planche : une par mois dans
+   l'Agenda (le mois affiché), le plâtre dans Sports pendant une blessure en
+   cours, le coach dans Montres. Champs en plus : fond (derrière tout), pieds
+   (par-dessus les pieds), brasG (remplace le bras gauche), devant (objet
+   tenu, après les bras ; PL_PATTE_D redessine la patte droite qui le serre). */
+const PL_PATTE_D = '<ellipse class="pl-d" cx="152.5" cy="190" rx="9.5" ry="7.5"/>';
+const _plTissu = c => '<rect x="40" y="130" width="120" height="90" fill="' + c + '"/>';
+const _plFleur = (x, y, c, r) => {
+  let s = "";
+  for (let i = 0; i < 5; i++) { const a = i * 72 * Math.PI / 180 - Math.PI / 2;
+    s += '<circle cx="' + (x + Math.cos(a) * r).toFixed(1) + '" cy="' + (y + Math.sin(a) * r).toFixed(1) + '" r="' + r + '" fill="' + c + '"/>'; }
+  return s + '<circle cx="' + x + '" cy="' + y + '" r="' + (r * .62).toFixed(1) + '" fill="#fff3b8"/>';
+};
+const _plGoutte = (x, y) => '<path d="M' + x + ' ' + y + ' q-4 6 0 8.5 q4 -2.5 0 -8.5z" fill="#7fb2e8"/>';
+const _plNote = (x, y) => '<ellipse class="pl-air" cx="' + x + '" cy="' + y + '" rx="5.5" ry="4.2" transform="rotate(-20 ' + x + ' ' + y + ')"/>'
+  + '<path d="M' + (x + 4.8) + ' ' + (y - 1) + ' V' + (y - 22) + ' q6 3 9 10" fill="none" style="stroke:var(--accent)" stroke-width="2.4" stroke-linecap="round"/>';
+const _plBonbon = (x, y, c, r) => '<g transform="rotate(' + (r || 0) + ' ' + x + ' ' + y + ')"><path d="M' + (x - 5) + ' ' + y + ' l-5 -4 v8 z M' + (x + 5) + ' ' + y + ' l5 -4 v8 z" fill="' + c + '"/>'
+  + '<ellipse cx="' + x + '" cy="' + y + '" rx="6" ry="4.5" fill="' + c + '"/><path d="M' + (x - 2) + ' ' + (y - 2) + ' q2 -1 4 0" stroke="#fff" stroke-width="1.2" fill="none" opacity=".7"/></g>';
+const _plSucette = (x, y, c) => '<path d="M' + x + ' ' + y + ' v14" stroke="#f4efe8" stroke-width="2.2"/><circle cx="' + x + '" cy="' + y + '" r="6" fill="' + c + '"/>'
+  + '<path d="M' + (x - 3) + ' ' + y + ' a3 3 0 1 1 3 3" stroke="#fff" stroke-width="1.4" fill="none"/>';
+const _plCoeur = (x, y) => '<path d="M' + x + ' ' + y + ' c-2 -3 -6 0 -3 3 l3 3 l3 -3 c3 -3 -1 -6 -3 -3z" fill="#e05a7a"/>';
+const _plPetitesFleurs = () => {
+  let s = "", i = 0; const c = ["#fff4e8", "#ffd34d", "#ff9cc2", "#7fe0c0"];
+  for (let y = 146; y <= 212; y += 10) for (let x = 44 + (y % 20 ? 6 : 0); x <= 158; x += 12) {
+    s += i % 3 === 2 ? '<ellipse cx="' + x + '" cy="' + y + '" rx="1.6" ry="3.2" fill="#1f9d63" transform="rotate(35 ' + x + ' ' + y + ')"/>' : _plFleur(x, y, c[i % 4], 1.7);
+    i++;
+  }
+  return s;
+};
+const _plLei = () => {   // collier de fleurs d'août, le long du cou
+  let s = "";
+  ["#ff4f8b", "#ffb000", "#9b5de5", "#00bbf9", "#ff6b35", "#ffe14d", "#f15bb5", "#00c49a", "#ff4f8b", "#ffb000", "#9b5de5"]
+    .forEach((c, i) => { const k = i / 10; s += _plFleur(60 + 80 * k, 146 + 80 * k * (1 - k), c, 3.6); });
+  return s;
+};
+Object.assign(PILOU_TENUES, {
+  galette: {
+    devant: '<path d="M106 197 L156 176 Q168 192 158 210 Z" fill="#e8b960"/><path d="M156 176 Q168 192 158 210" stroke="#b9802f" stroke-width="5" fill="none" stroke-linecap="round"/>'
+      + '<path d="M146 182 Q154 193 148 205" stroke="#f6e2a8" stroke-width="2.4" fill="none"/>',
+    tete: '<path d="M68 52 L65 24 L82 37 L91 15 L100 32 L109 15 L118 37 L135 24 L132 52 Q100 42 68 52 Z" fill="' + PL_OR + '"/>'
+      + '<path d="M68 52 Q100 42 132 52 L133 44 Q100 33 67 44 Z" fill="#a67c3c"/>'
+      + '<circle cx="65" cy="24" r="3" fill="#e2bf7e"/><circle cx="91" cy="15" r="3" fill="#e2bf7e"/><circle cx="109" cy="15" r="3" fill="#e2bf7e"/><circle cx="135" cy="24" r="3" fill="#e2bf7e"/>'
+      + '<circle cx="84" cy="44" r="3.2" fill="#d6455d"/><circle cx="100" cy="41" r="3.2" fill="#3b78d8"/><circle cx="116" cy="44" r="3.2" fill="#2e9e6a"/>' },
+  ski: { manche: "#2f6fd1", poignet: "#1f4f9c",
+    fond: '<g transform="rotate(12 172 118)"><rect x="166" y="16" width="11" height="196" rx="5.5" fill="#e04f3a"/><rect x="169.5" y="22" width="4" height="184" rx="2" fill="#f7d36b"/></g>'
+      + '<g transform="rotate(20 186 122)"><rect x="180" y="20" width="11" height="196" rx="5.5" fill="#e04f3a"/><rect x="183.5" y="26" width="4" height="184" rx="2" fill="#f7d36b"/></g>',
+    corps: _plTissu("#2f6fd1") + '<path d="M40 166 H160" stroke="#f7d36b" stroke-width="7"/><path d="M40 175 H160" stroke="#fff" stroke-width="3"/>'
+      + '<path d="M100 138 V212" stroke="#1f4f9c" stroke-width="3"/><rect x="96.5" y="150" width="7" height="10" rx="2" fill="#d9dee6"/>'
+      + '<path d="M80 136 Q100 150 120 136 L120 128 L80 128 Z" fill="#1f4f9c"/>' },
+  cire: { manche: "#f2c230", poignet: "#d9a91a",
+    corps: _plTissu("#f2c230") + '<path d="M80 136 L100 150 L120 136 L120 128 L80 128 Z" fill="#e0ad1c"/><path d="M100 148 V212" stroke="#c99a12" stroke-width="2"/>'
+      + '<rect x="92" y="160" width="16" height="4.5" rx="2" fill="#7a5520"/><rect x="92" y="176" width="16" height="4.5" rx="2" fill="#7a5520"/><rect x="92" y="192" width="16" height="4.5" rx="2" fill="#7a5520"/>',
+    pieds: '<path d="M52 204 Q50 186 64 186 H78 Q90 186 89 200 Q89 211 78 211 H60 Q52 211 52 204Z" fill="#3f8f5a"/><path d="M111 204 Q110 186 122 186 H136 Q150 186 148 200 Q148 211 138 211 H120 Q111 211 111 204Z" fill="#3f8f5a"/>'
+      + '<path d="M54 192 H88 M112 192 H147" stroke="#2f6e44" stroke-width="3"/>',
+    devant: '<path d="M155 192 L172 32" stroke="#4a505c" stroke-width="3.2" stroke-linecap="round"/>'
+      + '<path d="M138 36 Q172 -14 206 36 Q197 29 189 36 Q181 29 172 36 Q164 29 155 36 Q147 29 138 36 Z" fill="#3b6fd8"/><path d="M172 -1 v-6" stroke="#4a505c" stroke-width="3" stroke-linecap="round"/>'
+      + _plGoutte(196, 52) + _plGoutte(206, 76) + _plGoutte(24, 22) + _plGoutte(8, 50) + _plGoutte(30, 2) + PL_PATTE_D,
+    tete: '<path d="M62 54 Q62 22 100 20 Q138 22 138 54 Z" fill="#f2c230"/><path d="M48 56 Q100 40 152 56 Q158 65 147 67 Q100 54 53 67 Q42 65 48 56 Z" fill="#e0ad1c"/>' },
+  paques: {
+    devant: '<ellipse cx="144" cy="181" rx="7" ry="9" fill="#6b3f22"/><ellipse cx="156" cy="178" rx="7" ry="9" fill="#e86a92"/><ellipse cx="168" cy="181" rx="7" ry="9" fill="#4f8fe0"/>'
+      + '<path d="M152 176 H160 M164 180 H172" stroke="#fff" stroke-width="1.6" opacity=".8"/>'
+      + '<path d="M136 152 Q156 128 176 152" fill="none" stroke="#8a5a2b" stroke-width="4"/>'
+      + '<path d="M134 186 L178 186 L172 210 L140 210 Z" fill="#b07a3c"/><path d="M136 194 H176 M138 202 H174" stroke="#8a5a2b" stroke-width="2"/>'
+      + '<path d="M136 152 L135 186 M176 152 L177 186" stroke="#8a5a2b" stroke-width="4"/>' + PL_PATTE_D
+      + '<ellipse cx="26" cy="203" rx="8" ry="10" fill="#f2c230"/><path d="M18 202 l4 -3 l4 3 l4 -3 l4 3" stroke="#d6455d" stroke-width="1.8" fill="none"/>',
+    tete: '<path d="M100 154 L83 144 Q78 154 83 164 Z M100 154 L117 144 Q122 154 117 164 Z" fill="#f08fb3"/><circle cx="100" cy="154" r="5" fill="#d9658f"/>' },
+  jardin: {
+    corps: '<rect class="pl-b" x="40" y="130" width="120" height="90"/><path d="M72 148 H128 L136 214 H64 Z" fill="#4f8a4b"/><rect x="87" y="178" width="26" height="17" rx="2.5" fill="#3f733c"/>',
+    dessus: '<path d="M118 172 Q120 160 126 152" stroke="#3f8f3a" stroke-width="2" fill="none"/><path d="M117 174 Q109 159 119 150 Q123 163 117 174Z" fill="#6cbf5f"/>'
+      + '<circle cx="126.5" cy="154" r="2.9" fill="#fff" stroke="#cdd6cf"/><circle cx="129" cy="158.5" r="2.9" fill="#fff" stroke="#cdd6cf"/><circle cx="130.5" cy="163.5" r="2.9" fill="#fff" stroke="#cdd6cf"/>',
+    tete: '<ellipse cx="100" cy="52" rx="68" ry="11" fill="#e6c77a"/><path d="M66 52 Q66 18 100 16 Q134 18 134 52 Z" fill="#efd28d"/>'
+      + '<path d="M70 30 Q100 24 130 30 M76 22 Q100 17 124 22" stroke="#d2b25f" stroke-width="1.6" fill="none"/>'
+      + '<path d="M66 44 Q100 37 134 44 L134 52 Q100 45 66 52 Z" fill="#4f8a4b"/>' },
+  musique: {
+    dessus: '<path d="M72 146 Q112 150 140 176" stroke="#5a3a24" stroke-width="4" fill="none"/>'
+      + '<path d="M128 176 L60 158" stroke="#6b4226" stroke-width="7" stroke-linecap="round"/><path d="M62 158.5 L48 155" stroke="#3e2616" stroke-width="9" stroke-linecap="round"/>'
+      + '<circle cx="114" cy="167" r="11" fill="#d08b45"/><circle cx="128" cy="176" r="14" fill="#d08b45"/><circle cx="117" cy="170" r="4.2" fill="#3e2616"/>'
+      + '<rect x="126" y="175" width="9" height="3.6" rx="1" fill="#3e2616" transform="rotate(15 130 177)"/><path d="M56 157 L134 178" stroke="#f2ede6" stroke-width=".9"/>',
+    devant: _plNote(176, 40) + _plNote(196, 72) + _plNote(16, 34) },
+  tour: { manche: "#f5d000", poignet: "#1d1d1d",
+    corps: _plTissu("#f5d000") + '<path d="M84 136 L100 150 L116 136 Z" fill="#1d1d1d"/>'
+      + '<g fill="none" stroke="#1d1d1d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="87" cy="180" r="7"/><circle cx="113" cy="180" r="7"/>'
+      + '<path d="M87 180 L96 167 H108 L113 180 M96 167 L100 180 H87 M100 180 L108 167 M94 164 H99 M107 167 L106 162 H111"/></g>'
+      + '<rect x="40" y="198" width="120" height="22" fill="#1d1d1d"/><path d="M40 196 H160" stroke="#e03a3a" stroke-width="2"/>',
+    tete: '<path d="M66 54 Q66 26 100 24 Q134 26 134 54 Z" fill="#fff"/><path d="M89 27 V54" stroke="#2d6bd6" stroke-width="6"/><path d="M111 27 V54" stroke="#e03a3a" stroke-width="6"/>'
+      + '<path d="M76 54 Q100 46 124 54 L121 42 Q100 34 79 42 Z" fill="#f5d000"/>' },
+  plage: { manche: "#e8433f", poignet: "#c22f2c",
+    corps: _plTissu("#e8433f") + _plPetitesFleurs()
+      + '<path d="M82 136 L118 136 L100 168 Z" class="pl-l"/><path d="M80 134 L100 168 L92 140 Z M120 134 L100 168 L108 140 Z" fill="#c22f2c"/>'
+      + '<circle cx="100" cy="182" r="2" fill="#fff"/><circle cx="100" cy="198" r="2" fill="#fff"/>',
+    devant: '<circle cx="150" cy="161" r="7.5" fill="#ff9cc2"/><circle cx="158" cy="157" r="7.5" fill="#9fe3c4"/>'
+      + '<path d="M144 166 L162 166 L154 204 Z" fill="#d9a35e"/><path d="M147 172 L159 182 M159 172 L149 183 M150 188 L157 194" stroke="#b9823f" stroke-width="1.2"/>' + PL_PATTE_D,
+    tete: _plLei() },
+  rentree: {
+    fond: '<rect x="34" y="122" width="132" height="82" rx="14" fill="#b8432f"/><path d="M34 140 H166" stroke="#9c3524" stroke-width="5"/>',
+    dessus: '<path d="M70 146 Q65 176 72 204" stroke="#7a2a1c" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M130 146 Q135 176 128 204" stroke="#7a2a1c" stroke-width="7" fill="none" stroke-linecap="round"/>'
+      + '<rect x="66" y="170" width="8" height="6" rx="1" fill="' + PL_OR + '"/><rect x="126" y="170" width="8" height="6" rx="1" fill="' + PL_OR + '"/>',
+    devant: '<g transform="rotate(40 154 186)"><rect x="149" y="124" width="11" height="74" rx="1.5" fill="#f3e2b3" stroke="#cdb57a" stroke-width="1"/>'
+      + [130, 138, 146, 154, 162, 170, 178, 186].map((y, i) => '<path d="M149 ' + y + ' h' + (i % 2 ? 3 : 5) + '" stroke="#8a6c3e" stroke-width="1"/>').join("") + '</g>'
+      + '<g transform="rotate(12 154 186)"><rect x="150" y="146" width="8" height="42" fill="#f2c230"/><path d="M150 146 L154 135 L158 146 Z" fill="#e8c9a0"/>'
+      + '<path d="M152.6 139 L154 135 L155.4 139 Z" fill="#2a1822"/><rect x="150" y="188" width="8" height="6" fill="#b9bec7"/><rect x="150" y="194" width="8" height="6" rx="2.5" fill="#e88b9a"/></g>' + PL_PATTE_D },
+  halloween: {
+    devant: '<g transform="translate(188 201) scale(1.25) translate(-168 -199)"><path d="M145 186 Q168 150 191 186" fill="none" stroke="#4a505c" stroke-width="2.8"/>'
+      + _plSucette(163, 171, "#e8433f") + _plSucette(176, 170, "#3b78d8") + _plBonbon(170, 178, "#9b5de5", -10) + _plBonbon(161, 179, "#3fbf7f", 8) + _plBonbon(178, 179, "#f7d36b", -6)
+      + '<path d="M143 199 Q143 179 168 179 Q193 179 193 199 Q193 219 168 219 Q143 219 143 199Z" fill="#f08a24"/>'
+      + '<ellipse cx="168" cy="181" rx="17" ry="3.2" fill="#b85a10"/>'
+      + '<path d="M168 180 V219 M157 182 Q151 199 157 217 M179 182 Q185 199 179 217" stroke="#d06e12" stroke-width="1.8" fill="none"/>'
+      + '<path d="M156 197 l5 -7 l5 7z M170 197 l5 -7 l5 7z M155 205 q13 9 26 0 l-4 4 l-3.5 -3 l-3.5 3 l-3.5 -3 l-3.5 3 l-3.5 -3z" fill="#2a1822"/></g>'
+      + _plBonbon(146, 218, "#e8433f", 25) + _plSucette(28, 198, "#9b5de5") + _plBonbon(22, 214, "#f7d36b", -15),
+    tete: '<ellipse cx="100" cy="52" rx="60" ry="9.5" fill="#4b2a6e"/><path d="M70 50 L95 -2 Q104 -16 120 -8 Q109 -4 108 8 L130 50 Z" fill="#5e3589"/>'
+      + '<path d="M72 44 Q100 37 128 44 L130 50 Q100 43 70 50 Z" fill="#e8862c"/><rect x="94" y="38.5" width="12" height="9" rx="1.5" fill="none" stroke="' + PL_OR + '" stroke-width="2.4"/>'
+      + '<path d="M100 20 l1.6 3.4 3.6 .4 -2.7 2.4 .8 3.6 -3.3 -1.9 -3.3 1.9 .8 -3.6 -2.7 -2.4 3.6 -.4z" fill="#f7d36b"/><circle cx="113" cy="30" r="1.8" fill="#f7d36b"/><circle cx="90" cy="34" r="1.5" fill="#f7d36b"/>' },
+  pull: { manche: "#d39b2a", poignet: "#b8831d",
+    corps: _plTissu("#d39b2a") + [70, 100, 130].map(x => '<path d="M' + x + ' 140 q6 8 0 16 q-6 8 0 16 q6 8 0 16 q-6 8 0 16" stroke="#b8831d" stroke-width="3" fill="none"/>').join("")
+      + '<rect x="40" y="198" width="120" height="22" fill="#c48d22"/><path d="M50 198 v20 M62 198 v20 M74 198 v20 M86 198 v20 M98 198 v20 M110 198 v20 M122 198 v20 M134 198 v20 M146 198 v20" stroke="#a8761a" stroke-width="1.6"/>'
+      + '<path d="M80 136 Q100 150 120 136 L120 128 L80 128 Z" fill="#c48d22"/>',
+    devant: '<path d="M168 182 q9 0 9 7 q0 7 -9 7" fill="none" stroke="#f4efe8" stroke-width="4"/><rect x="146" y="176" width="23" height="25" rx="4" fill="#f4efe8"/>'
+      + '<rect x="146" y="188" width="23" height="4" fill="#c0392b"/><ellipse cx="157.5" cy="177.5" rx="10" ry="3" fill="#6b3f22"/>'
+      + '<path class="pl-fil" d="M152 170 q-4 -6 0 -12 q4 -6 0 -12 M163 170 q-4 -6 0 -12 q4 -6 0 -12"/>' + PL_PATTE_D,
+    tete: '<g transform="rotate(-24 124 40)"><path d="M124 28 Q138 34 133 48 Q124 53 115 46 Q111 34 124 28Z" fill="#d9622b"/><path d="M124 30 L123 52" stroke="#a8461b" stroke-width="1.5"/></g>' },
+  noel: { manche: "#c8262c", poignet: "#f5f2ee",
+    fond: '<rect x="14" y="84" width="17" height="17" rx="2" fill="#2e8b57"/><path d="M22.5 84 v17 M14 92.5 h17" stroke="' + PL_OR + '" stroke-width="2.4"/>'
+      + '<rect x="32" y="78" width="15" height="20" rx="2" fill="#3567d6"/><path d="M39.5 78 v20" stroke="#f7d36b" stroke-width="2.4"/>'
+      + '<path d="M6 160 Q-2 108 26 96 Q52 88 62 112 Q70 140 60 172 Z" fill="#8a5a33"/><path d="M16 104 Q34 98 54 106" stroke="#6b4426" stroke-width="3" fill="none"/>',
+    corps: _plTissu("#c8262c") + '<rect x="91" y="130" width="18" height="90" fill="#f5f2ee"/><rect x="40" y="182" width="120" height="11" fill="#1d1d1d"/>'
+      + '<rect x="91" y="179.5" width="18" height="16" rx="2.5" fill="none" stroke="' + PL_OR + '" stroke-width="3"/>',
+    pieds: '<ellipse cx="70" cy="200" rx="20" ry="11" fill="#1d1d1d"/><ellipse cx="130" cy="200" rx="20" ry="11" fill="#1d1d1d"/><path d="M54 194 H86 M114 194 H146" stroke="#f5f2ee" stroke-width="4"/>',
+    tete: '<path d="M60 50 Q64 10 104 6 Q142 4 168 32 Q173 42 163 46 Q150 30 136 30 Q142 38 142 50 Z" fill="#c8262c"/>'
+      + '<path d="M54 63 Q100 45 146 63 Q151 53 144 46 Q100 30 56 46 Q49 53 54 63Z" fill="#f5f2ee"/><circle cx="168" cy="43" r="10" fill="#f5f2ee"/>' },
+  coach: { manche: "#5b3fa8", poignet: "#f2ede6",
+    corps: _plTissu("#5b3fa8") + '<path d="M58 130 V220 M142 130 V220" stroke="#f2ede6" stroke-width="5"/><path d="M100 138 V212" stroke="#46308a" stroke-width="3"/>'
+      + '<path d="M80 136 Q100 150 120 136 L120 128 L80 128 Z" fill="#46308a"/>',
+    dessus: '<path d="M80 150 Q90 172 100 176 Q110 172 120 150" stroke="#e8862c" stroke-width="2.4" fill="none"/>'
+      + '<circle cx="100" cy="186" r="10" fill="#d4d9e0" stroke="#8a929e" stroke-width="2"/><circle cx="100" cy="186" r="6.5" fill="#fff"/><path d="M100 186 V181.5 M100 186 L103 188" stroke="#2a1822" stroke-width="1.5" stroke-linecap="round"/>'
+      + '<rect x="97.5" y="172.5" width="5" height="4" rx="1" fill="#8a929e"/>' },
+});
+/* Le coach porte une montre au poignet gauche, écran sur une courbe de cœur */
+PILOU_TENUES.coach.brasG = '<g transform="rotate(18 54 172)">' + _plBras(54, 172, 0, 21, PILOU_TENUES.coach)
+  + '<rect x="41" y="181" width="26" height="6" rx="3" fill="#2b2f36"/><rect x="45.5" y="176" width="17" height="15" rx="4" fill="#1d1f24"/>'
+  + '<rect x="48" y="178.5" width="12" height="10" rx="2.5" fill="#123b33"/><path d="M50 184 l2 -2 l2 3 l2 -4 l2 3" stroke="#3fe0a8" stroke-width="1.3" fill="none"/></g>';
+/* Sports, blessure en cours : la tenue de sport, bras plâtré et signé, pansement sur la joue */
+PILOU_TENUES.blesse = Object.assign({}, PILOU_TENUES.sport, {
+  brasG: '<g transform="rotate(18 54 172)"><ellipse class="pl-d" cx="54" cy="193" rx="9" ry="7"/>'
+    + '<rect x="40" y="150" width="28" height="42" rx="13" fill="#f7f7f4" stroke="#d6d8d2" stroke-width="1.5"/>'
+    + '<path d="M42 160 H66 M42 182 H66" stroke="#e4e5e0" stroke-width="1.4"/>'
+    + _plCoeur(50, 168) + '<path d="M45 177 q3 -4 6 0 t6 0" stroke="#3b78d8" stroke-width="1.5" fill="none"/></g>',
+  tete: PILOU_TENUES.sport.tete
+    + '<g transform="rotate(-28 143 128)"><rect x="132" y="124" width="22" height="8.5" rx="4.2" fill="#f0c7a0"/><rect x="139.5" y="124" width="7" height="8.5" fill="#e0ad84"/></g>' });
+const PILOU_TENUE_MOIS = ["galette", "ski", "cire", "paques", "jardin", "musique", "tour", "plage", "rentree", "halloween", "pull", "noel"];
 /* Section -> tenue. Accueil en costard (choix d'Arthur) ; sections absentes :
-   Pilou sans tenue. */
+   Pilou sans tenue. Agenda : le mois affiché ; Sports : le plâtre tant
+   qu'une blessure dure aujourd'hui. */
 const PILOU_TENUE_SECTION = { "sec-pea": "costard", "sec-cto": "costard", "sec-crypto": "costard",
-  "sec-sport": "sport", "sec-sante": "sante", "sec-comptes": "gilet", "sec-patri": "peignoir", "sec-actus": "reporter" };
+  "sec-sport": "sport", "sec-sante": "sante", "sec-comptes": "gilet", "sec-patri": "peignoir", "sec-actus": "reporter",
+  "sec-garmin": "coach" };
 function pilouTenueDe(tabId) {
   if (String(tabId || "").split("@")[0] === "home") return "costard";
   const sec = typeof _navSectionOf === "function" ? _navSectionOf(tabId) : null;
+  if (sec && sec.id === "sec-agenda" && typeof _agMois !== "undefined") return PILOU_TENUE_MOIS[_agMois.mois];
+  if (sec && sec.id === "sec-sport" && typeof spInjuries === "function") {
+    const auj = spDateISO(new Date());   // guéri aujourd'hui : plus de plâtre
+    if (spInjuries().some(b => b.start && b.start <= auj && spInjuryOngoing(b))) return "blesse";
+  }
   return (sec && PILOU_TENUE_SECTION[sec.id]) || "";
 }
 let _plNum = 0;   // identifiant propre à chaque dessin (clipPath du ventre)
@@ -12987,19 +13145,22 @@ function pilouSvg(humeur, tenue) {
   }
   const clip = "pl-ventre-" + (++_plNum);
   return '<svg viewBox="0 0 200 212" focusable="false" overflow="visible">'
+    + (t && t.fond || "")
     // oreilles, corps assis (ou sa tenue), pieds, bras
     + '<circle class="pl-b" cx="56" cy="54" r="24"/><circle class="pl-l" cx="56" cy="56" r="12"/>'
     + '<circle class="pl-b" cx="144" cy="54" r="24"/><circle class="pl-l" cx="144" cy="56" r="12"/>'
-    + (t
+    + (t && t.corps
       ? '<clipPath id="' + clip + '"><ellipse cx="100" cy="174" rx="52" ry="34"/></clipPath>'
-        + '<g clip-path="url(#' + clip + ')">' + t.corps + '</g>' + (t.dessus || "")
+        + '<g clip-path="url(#' + clip + ')">' + t.corps + '</g>'
       : '<ellipse class="pl-b" cx="100" cy="174" rx="52" ry="34"/><ellipse class="pl-l" cx="100" cy="179" rx="30" ry="22"/>')
+    + (t && t.dessus || "")
     + '<ellipse class="pl-d" cx="70" cy="200" rx="19" ry="10"/><ellipse class="pl-d" cx="130" cy="200" rx="19" ry="10"/>'
     + '<ellipse class="pl-l" cx="70" cy="200" rx="8" ry="5"/><ellipse class="pl-l" cx="130" cy="200" rx="8" ry="5"/>'
-    + _plBras(54, 172, 18, 21, t)
+    + (t && t.pieds || "")
+    + (t && t.brasG || _plBras(54, 172, 18, 21, t))
     + (salut
       ? '<g class="pl-salut">' + _plBras(160, 138, 38, 22, t, true) + '</g>'
-      : _plBras(146, 172, -18, 21, t))
+      : _plBras(146, 172, -18, 21, t) + (t && t.devant || ""))
     // tête et visage
     + '<ellipse class="pl-b" cx="100" cy="98" rx="64" ry="56"/>'
     + '<ellipse class="pl-l" cx="100" cy="116" rx="25" ry="19"/>'
@@ -21505,6 +21666,7 @@ function spRenderAll() {
   spRenderStats();
   // Une séance peut s'ajouter depuis l'accueil : ses tuiles suivent tout de suite
   if (typeof dashRender === "function") dashRender();
+  pilouRafraichir();   // blessure notée ou guérie : plâtre de Pilou
 }
 
 async function spBootstrap() {
@@ -29517,12 +29679,14 @@ function agChangerMois(delta) {
   while (m > 11) { m -= 12; a++; }
   _agMois = { annee: a, mois: m };
   agRenderCal();
+  pilouRafraichir();   // Pilou porte la tenue du mois affiché
 }
 
 function agAujourdhui() {
   const d = new Date();
   _agMois = { annee: d.getFullYear(), mois: d.getMonth() };
   agRenderCal();
+  pilouRafraichir();
 }
 
 /** « 14:00 » + 30 min → « 14:30 » (une note sans durée dure une heure, comme chez iCloud). */
@@ -32864,6 +33028,11 @@ function pilouBarre(n) {
   }
   el.dataset.tenue = tenue;
   el.innerHTML = pilouSvg("content", tenue);
+}
+/** Redessine Pilou dans la barre quand sa tenue change sans changer d'onglet
+    (mois de l'Agenda, blessure notée ou guérie). */
+function pilouRafraichir() {
+  try { if (document.getElementById("pilou-barre")) pilouBarre(document.body.dataset.activeTab || "home"); } catch (e) {}
 }
 document.addEventListener("keydown", e => {
   if (e.key !== "Escape") return;
