@@ -44,6 +44,13 @@ input, select { font-family: var(--mono); }
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--brd2); border-radius: 2px; }
+/* La page entière défile sans barre : la sienne courait sur toute la hauteur
+   de la fenêtre, barre de titre comprise, et laissait à droite une bande de
+   4 px que le fond (body::before, fixe) ne couvre pas. La molette, le pavé
+   tactile et le clavier font toujours défiler ; les zones internes gardent
+   leur barre. */
+html { scrollbar-width: none; }
+html::-webkit-scrollbar { display: none; }
 
 /* ── Layout ─────────────────────────────────────── */
 .wrap { max-width: 1120px; margin: 0 auto; padding: 2rem 1.5rem; }
