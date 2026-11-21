@@ -1964,6 +1964,10 @@ label.sv-check, label.sv-inline {
 /* ── Garmin (garmin.py) ─────────────────────────────────────────────────── */
 .ga-maj { font-size: 12px; color: var(--txt3); }
 .ga-chart { position: relative; height: 260px; }
+.ga-bloc-t { display: flex; align-items: center; gap: 8px; margin: 1.6rem 0 .8rem; font-family: var(--serif); font-size: 20px; font-weight: 500; color: var(--txt); }
+.ga-bloc-t:first-of-type { margin-top: .2rem; }
+.ga-bloc-t .ph { color: var(--accent-text, var(--accent)); font-size: 20px; }
+.ga-kpis-seuls { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
 .mkpi.ga-kpi-clic { cursor: pointer; transition: border-color .15s; }
 .mkpi.ga-kpi-clic:not(.accent):hover { border-color: var(--accent); }
 .ga-courbe-h { flex-wrap: wrap; gap: .6rem; }
@@ -4924,7 +4928,7 @@ html.verre .toast-stack .toast {
 
     <div class="fg fin-ac-wrap">
       <label>Libellé</label>
-      <input id="fin-tx-label" type="text" autocomplete="off" placeholder="Ex. Courses Carrefour, Salaire mai…"
+      <input id="fin-tx-label" type="text" autocomplete="off" placeholder="Ex. Courses, Salaire mai…"
              role="combobox" aria-autocomplete="list" aria-controls="fin-tx-ac" aria-expanded="false"
              oninput="finAcUpdate()" onkeydown="finAcKey(event)" onblur="setTimeout(finAcClose, 150)">
       <div class="fin-ac" id="fin-tx-ac" role="listbox" hidden></div>
@@ -5754,7 +5758,7 @@ html.verre .toast-stack .toast {
   <div class="modal" style="max-width:480px">
     <h2>Bien immobilier</h2>
     <div class="fg"><label>Nom du bien</label>
-      <input id="pa-bien-nom" maxlength="60" placeholder="ex : Appartement Toulon, maison"></div>
+      <input id="pa-bien-nom" maxlength="60" placeholder="ex : Appartement, maison"></div>
     <div class="fg-row">
       <div class="fg"><label>Valeur estimée (€)</label>
         <input id="pa-bien-val" type="number" step="0.01" min="0" placeholder="ex : 180000"></div>
@@ -6081,7 +6085,7 @@ html.verre .toast-stack .toast {
   <div class="modal">
     <h2 id="cto-cpt-titre">Nouveau CTO</h2>
     <div class="fg"><label>Nom du compte</label>
-      <input id="cto-cpt-nom" maxlength="40" placeholder="ex : CTO Trade Republic"></div>
+      <input id="cto-cpt-nom" maxlength="40" placeholder="ex : CTO, compte-titres"></div>
     <div class="fg"><label id="cto-cpt-courtier-lbl">Courtier</label>
       <select id="cto-cpt-courtier" onchange="ctoCompteResume()"></select></div>
     <p class="pac-dim" id="cto-cpt-resume" style="margin:-4px 0 14px"></p>
@@ -6305,7 +6309,7 @@ html.verre .toast-stack .toast {
       <span id="df-recap-txt"></span>
     </div>
     <div class="fg"><label>Montant estimé (€)</label><input id="df-montant" type="number" step="0.01" placeholder="calculé auto"></div>
-    <div class="fg"><label>Note (optionnel)</label><input id="df-note" placeholder="Saint-Gobain 2026…"></div>
+    <div class="fg"><label>Note (optionnel)</label><input id="df-note" placeholder="Acompte, solde de l'année…"></div>
     <div class="mact">
       <button class="btn btn-ghost" onclick="closeOv('ov-divf')">Annuler</button>
       <button class="btn btn-primary" id="divf-save-btn" onclick="saveDivFuture()">Enregistrer</button>
@@ -6329,7 +6333,7 @@ html.verre .toast-stack .toast {
       <span id="dv-recap-txt"></span>
     </div>
     <div class="fg"><label>Montant reçu (€)</label><input id="dv-montant" type="number" step="0.01" placeholder="calculé auto"></div>
-    <div class="fg"><label>Note (optionnel)</label><input id="dv-note" placeholder="Saint-Gobain 2026…"></div>
+    <div class="fg"><label>Note (optionnel)</label><input id="dv-note" placeholder="Acompte, solde de l'année…"></div>
     <div class="mact">
       <button class="btn btn-ghost" onclick="closeOv('ov-div')">Annuler</button>
       <button class="btn btn-primary" onclick="saveDiv()">Enregistrer</button>
@@ -22677,7 +22681,7 @@ function prVenteModal(id) {
 function prAvContratModal(id) {
   const c = id ? prAvContrat(id) : null;
   prOpenForm(c ? "Modifier le contrat" : "Nouveau contrat d'assurance vie", `
-    ${prFg("Nom du contrat", "label", "text", c ? c.label : "", 'placeholder="Ex. Linxea Spirit, AV Crédit Agricole…" required')}
+    ${prFg("Nom du contrat", "label", "text", c ? c.label : "", 'placeholder="Ex. Assurance vie, contrat de ma banque…" required')}
     ${prFg("Frais sur versements (%)", "frais_versement", "number", c && prN(c.frais_versement) ? c.frais_versement : "", 'step="0.01" min="0" max="99" placeholder="0"')}
     <div class="m-note" style="margin-bottom:0">Pris sur chaque dépôt avant de placer l'argent : le taux figure dans
       les conditions de ton contrat.${c ? "" : " Chaque contrat a ses propres taux annuels et ses propres dépôts."}</div>`,
@@ -30487,13 +30491,11 @@ function gaRenderForme() {
     const [jO, o] = gaDernier("spo2");
     const [jR, rs] = gaDernier("respiration");
     const age = GA.config && GA.config.ageForme;
-    const im = gaIntensiteSemaine();
     const [jC, rc] = gaDernier("recup");
     const hor = gaHoraires(30);
     const kpis2 = [
       hor ? gaKpi("Coucher et lever", hor.coucher + " → " + hor.lever,
                   "moyenne 30 j · coucher régulier à ± " + hor.ecart + " min") : "",
-      im ? gaKpi("Minutes intenses", im.total + " min", "cette semaine" + (im.objectif ? " · objectif " + im.objectif + " min" : ""), "intensite") : "",
       rc ? gaKpi("Récupération", rc.recup + " %", "d'après Coros · " + gaLeJour(jC)) : "",
       o ? gaKpi("SpO2", o.spo2 + " %", "moyenne du jour · " + dashDateCourte(jO), "spo2") : "",
       rs ? gaKpi("Respiration", rs.respiration + " /min", "moyenne du jour · " + dashDateCourte(jR), "respiration") : "",
@@ -30513,7 +30515,16 @@ function gaRenderForme() {
         <div class="card-b"><div class="ga-chart"><canvas id="ga-chart"></canvas></div></div></div>`;
   }
 
-  box.innerHTML = alerte + alerteCo + rappel + forme + gaRecordsHtml() + gaCycleHtml() + gaSeancesHtml();
+  // Deux blocs : la santé (sommeil, récupération, cycle), puis le sport
+  // (minutes intenses, records, séances). Un bloc vide n'a pas de titre.
+  const im = gaIntensiteSemaine();
+  const sport = (im ? `<div class="mkpis ga-kpis-seuls">${gaKpi("Minutes intenses", im.total + " min",
+      "cette semaine" + (im.objectif ? " · objectif " + im.objectif + " min" : ""))}</div>` : "")
+    + gaRecordsHtml() + gaSeancesHtml();
+  const sante = forme + gaCycleHtml();
+  box.innerHTML = alerte + alerteCo + rappel
+    + `<h2 class="ga-bloc-t"><i class="ph ph-heartbeat"></i> Santé</h2>` + sante
+    + (sport ? `<h2 class="ga-bloc-t"><i class="ph ph-person-simple-run"></i> Sport</h2>` + sport : "");
   gaRenderCourbe();
 }
 
@@ -32770,6 +32781,10 @@ async function pilouDemarrage() {
   }
   if (ex || !_hydrationDone || !S.uiPrefs || S.uiPrefs.visiteProposee) return;
   if (document.getElementById("ov-welcome")) return;   // Premiers pas en cours
+  // Premiers pas à venir : ils attendent quelques lectures avant de s'ouvrir,
+  // et proposent eux-mêmes la visite (même condition que _showWelcomeIfFirstRun)
+  const peaVide = !(S.positions || []).length && !(S.transactions || []).length && !(S.depots || []).length;
+  if (peaVide && !S.uiPrefs.premiersPas) return;
   S.uiPrefs.visiteProposee = true;
   _enregistrerUiPrefs();
   const box = document.createElement("div");
