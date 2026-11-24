@@ -13094,13 +13094,26 @@ PILOU_TENUES.blesse = Object.assign({}, PILOU_TENUES.sport, {
     + _plCoeur(50, 168) + '<path d="M45 177 q3 -4 6 0 t6 0" stroke="#3b78d8" stroke-width="1.5" fill="none"/></g>',
   tete: PILOU_TENUES.sport.tete
     + '<g transform="rotate(-28 143 128)"><rect x="132" y="124" width="22" height="8.5" rx="4.2" fill="#f0c7a0"/><rect x="139.5" y="124" width="7" height="8.5" fill="#e0ad84"/></g>' });
+/* Pense-bête (24/11/2026, choisie par Arthur sur planche) : des post-it collés
+   sur le ventre, l'oreille et le front, un stylo à la patte */
+const _plPostit = (x, y, c, r, coche) => '<g transform="rotate(' + r + ' ' + x + ' ' + y + ')">'
+  + '<rect x="' + (x - 10) + '" y="' + (y - 10) + '" width="20" height="20" fill="' + c + '"/>'
+  + '<rect x="' + (x - 10) + '" y="' + (y - 10) + '" width="20" height="5" fill="#000" opacity=".07"/>'
+  + (coche ? '<path d="M' + (x - 5) + ' ' + (y + 1) + ' l3.5 3.5 l7 -8" stroke="#2a1822" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'
+    : '<path d="M' + (x - 6) + ' ' + (y - 1) + ' h12 M' + (x - 6) + ' ' + (y + 4) + ' h8" stroke="#2a1822" stroke-width="1.4" opacity=".55" stroke-linecap="round"/>')
+  + '</g>';
+PILOU_TENUES.postits = {
+  dessus: _plPostit(76, 166, "#ffe066", -12, true) + _plPostit(124, 170, "#ff9cc2", 10, false) + _plPostit(100, 192, "#8fd3ff", -4, false),
+  devant: '<g transform="rotate(-30 156 186)"><rect x="152" y="150" width="8" height="40" rx="2" fill="#3b78d8"/><rect x="152" y="150" width="8" height="8" rx="2" fill="#2a4f9c"/>'
+    + '<path d="M152 190 L156 200 L160 190 Z" fill="#e8e3da"/><path d="M155 196 L156 200 L157 196 Z" fill="#2a1822"/><path d="M160 156 v14" stroke="#c9ccd2" stroke-width="2"/></g>' + PL_PATTE_D,
+  tete: _plPostit(146, 50, "#a8e6a1", 18, false) + _plPostit(64, 58, "#ffe066", -20, true) };
 const PILOU_TENUE_MOIS = ["galette", "ski", "cire", "paques", "jardin", "musique", "tour", "plage", "rentree", "halloween", "pull", "noel"];
 /* Section -> tenue. Accueil en costard (choix d'Arthur) ; sections absentes :
    Pilou sans tenue. Agenda : le mois affiché ; Sports : le plâtre tant
    qu'une blessure dure aujourd'hui. */
 const PILOU_TENUE_SECTION = { "sec-pea": "costard", "sec-cto": "costard", "sec-crypto": "costard",
   "sec-sport": "sport", "sec-sante": "sante", "sec-comptes": "gilet", "sec-patri": "peignoir", "sec-actus": "reporter",
-  "sec-garmin": "coach" };
+  "sec-garmin": "coach", "sec-taches": "postits" };
 function pilouTenueDe(tabId) {
   if (String(tabId || "").split("@")[0] === "home") return "costard";
   const sec = typeof _navSectionOf === "function" ? _navSectionOf(tabId) : null;
@@ -31436,7 +31449,7 @@ function tcRender() {
       ? tcGroupeHtml("En retard", retard, "tc-g-retard") + tcGroupeHtml("Aujourd'hui", jour)
         + tcGroupeHtml("Les 7 prochains jours", semaine) + tcGroupeHtml("Plus tard", plusTard)
         + tcGroupeHtml("Sans date", sansDate)
-      : `<div class="card"><div class="m-empty">${typeof pilouVide === "function" ? pilouVide("joyeux") : ""}
+      : `<div class="card"><div class="m-empty">${typeof pilouVide === "function" ? pilouVide("joyeux", "postits") : ""}
           Rien à faire${_tcFiltre ? " dans « " + escHtml(_tcFiltre) + " »" : ""}. Ajoute une tâche avec le bouton du haut.</div></div>`;
   }
   const faites = document.getElementById("tc-faites");
@@ -31445,7 +31458,7 @@ function tcRender() {
     faites.innerHTML = l.length
       ? `<div class="card"><div class="tc-liste">${l.map(tcLigneHtml).join("")}</div></div>
          <p class="tc-aide">Décoche une tâche pour la remettre à faire. Les tâches qui reviennent (chaque jour, chaque mois…) ne s'affichent pas ici : cochées, elles repartent à leur prochaine date.</p>`
-      : `<div class="card"><div class="m-empty">${typeof pilouVide === "function" ? pilouVide() : ""}Aucune tâche faite pour l'instant.</div></div>`;
+      : `<div class="card"><div class="m-empty">${typeof pilouVide === "function" ? pilouVide("endormi", "postits") : ""}Aucune tâche faite pour l'instant.</div></div>`;
   }
 }
 
