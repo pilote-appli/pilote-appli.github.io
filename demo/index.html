@@ -937,6 +937,14 @@ body.has-shell .wrap { margin-left: 220px; max-width: calc(1120px + 220px); }
 .fin-rec-pill.fixed    { background: var(--b2); color: var(--b); }
 .fin-rec-pill.variable { background: var(--a2); color: var(--a); }
 .fin-rec-pill.paused   { background: var(--bg4); color: var(--txt3); }
+.fin-rec-pill.suivi    { background: var(--accent-soft); color: var(--accent-text); }
+/* Abonnements repérés (finAbo*) */
+.fin-abo-sec { font-size: 11px; font-weight: 700; color: var(--txt3); margin: 14px 0 4px; }
+.fin-abo-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--brd); }
+.fin-abo-row:last-child { border-bottom: 0; }
+.fin-abo-row > div:first-child { flex: 1; min-width: 0; }
+.fin-abo-row .fin-tx-amount { white-space: nowrap; }
+.fin-abo-acts { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
 
 /* Sources : ligne simple */
 .fin-src-row {
@@ -3983,6 +3991,7 @@ html.verre .toast-stack .toast {
       </div>
     </div>
     <div class="fin-aclasser-bar" id="fin-aclasser-bar" hidden></div>
+    <div class="fin-aclasser-bar" id="fin-abo-bar" hidden></div>
     <div class="fin-selbar" id="fin-selbar" hidden></div>
     <div class="fin-tx-head">
       <input type="checkbox" class="fin-tx-chk" id="fin-tx-chk-tout" onchange="finSelTout(this.checked)" title="Tout cocher" aria-label="Tout cocher"><span>Date</span><span>Libellé</span><span>Catégorie</span><span>Source</span><span style="text-align:right">Montant</span><span></span>
@@ -5133,6 +5142,7 @@ html.verre .toast-stack .toast {
         <select id="fin-rec-mode">
           <option value="fixed">Fixe (auto)</option>
           <option value="variable">Variable (à valider)</option>
+          <option value="suivi">Suivi (arrive par les relevés)</option>
         </select>
       </div>
     </div>
@@ -5669,10 +5679,18 @@ html.verre .toast-stack .toast {
             </div>
           </div>
           <div class="fg">
-            <label>Sauvegarde</label>
+            <label>Mon profil</label>
+            <p class="m-note" style="margin:0 0 8px">Tout ton espace dans un seul fichier (PEA, comptes-titres, comptes, sport, santé, patrimoine, pense-bête, agenda), pour le retrouver sur un autre ordinateur ou en faire un nouvel utilisateur. Sans ton code PIN.</p>
             <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-              <button type="button" class="btn btn-ghost btn-sm" onclick="doExport()" style="font-size:11px"><i class="ph ph-download-simple"></i> Exporter</button>
-              <button type="button" class="btn btn-ghost btn-sm" onclick="doImportDialog()" style="font-size:11px"><i class="ph ph-upload-simple"></i> Importer</button>
+              <button type="button" class="btn btn-ghost btn-sm" onclick="profilExporter()" style="font-size:11px"><i class="ph ph-download-simple"></i> Exporter mon profil</button>
+              <button type="button" class="btn btn-ghost btn-sm" onclick="profilImporter()" style="font-size:11px"><i class="ph ph-upload-simple"></i> Importer un profil</button>
+            </div>
+          </div>
+          <div class="fg">
+            <label>PEA seul</label>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <button type="button" class="btn btn-ghost btn-sm" onclick="doExport()" style="font-size:11px"><i class="ph ph-download-simple"></i> Exporter le PEA</button>
+              <button type="button" class="btn btn-ghost btn-sm" onclick="doImportDialog()" style="font-size:11px"><i class="ph ph-upload-simple"></i> Importer un PEA</button>
             </div>
           </div>
           <div class="fg">
@@ -12448,7 +12466,7 @@ const NAV_MODULES = {
   "sec-comptes": {
     desc: "Budget mois par mois, catégories, prélèvements récurrents, récap de l'année.",
     pas:  "Ajoute les dépenses et les revenus du mois, chacun dans sa catégorie.",
-    tab: "fin-month", tuiles: ["depense", "fin-releve"] },
+    tab: "fin-month", tuiles: ["depense", "fin-releve", "fin-abos"] },
   "sec-pret": {
     desc: "Étudiant ou autre : remboursements, argent placé (PEA, assurance vie, livret A), frais.",
     pas:  "Renseigne le montant, les dates et la mensualité, et donne-lui un nom.",
@@ -17536,7 +17554,7 @@ async function doImportDialog() {
   if (!(window.pywebview && window.pywebview.api)) {
     showToastModern("Import indisponible hors de l'app", "warn"); return;
   }
-  if (!(await confirmer("Remplacer tes données par l'import ?", { texte: "Une sauvegarde de l'état actuel sera faite avant.", ok: "Importer" }))) return;
+  if (!(await confirmer("Remplacer ton PEA par l'import ?", { texte: "Seul le PEA est remplacé. Une sauvegarde de son état actuel sera faite avant.\nPour tout ton espace : Importer un profil.", ok: "Importer" }))) return;
   await _gelerEnregistrements();   // rien ne doit réécrire l'ancien PEA par-dessus l'import
   const r = await window.pywebview.api.import_dialog();
   if (r && r.ok) {
@@ -17546,6 +17564,101 @@ async function doImportDialog() {
     _degelerEnregistrements();
     if (r && !r.cancelled) showToastModern("Import échoué : " + (r.message || ""), "err");
   }
+}
+
+/* — Mon profil : tout l'utilisateur actif dans un fichier (src/profil.py) — */
+const PROFIL_MODULES = {
+  "pea_data.json": "PEA", "cto.json": "comptes-titres et crypto", "finances.json": "Mes comptes",
+  "sports.json": "Sports", "sante.json": "Santé", "patrimoine.json": "Patrimoine",
+  "pret.json": "Prêt", "taches.json": "Pense-bête", "agenda.json": "Agenda",
+  "actus.json": "Actus", "garmin.json": "Garmin", "coros.json": "Coros",
+};
+// Codes chiffrés pour ce PC : venus d'un autre ordinateur, il faut se reconnecter
+const PROFIL_CONNEXIONS = ["actus.json", "agenda.json", "garmin.json", "coros.json"];
+
+async function profilExporter() {
+  const api = window.pywebview && window.pywebview.api;
+  if (!(api && api.profil_exporter)) { showToastModern("Export indisponible hors de l'app", "warn"); return; }
+  const mdp = await demander("Protéger le fichier par un mot de passe ?", "", {
+    type: "password", ok: "Exporter",
+    texte: "Laisse vide pour un fichier non protégé : n'importe qui pourra alors le lire.\nSans le mot de passe, le fichier ne s'ouvre plus : note-le."});
+  if (mdp === null) return;
+  if (mdp) {
+    const encore = await demander("Retape le mot de passe", "", { type: "password", ok: "Exporter" });
+    if (encore === null) return;
+    if (encore !== mdp) { showToastModern("Les deux mots de passe ne sont pas les mêmes.", "err"); return; }
+  }
+  await _viderEnregistrements();   // le fichier part avec les toutes dernières saisies
+  const r = await api.profil_exporter(mdp);
+  if (r && r.ok) showToastModern("Profil exporté" + (mdp ? ", protégé par ton mot de passe" : ""), "ok");
+  else if (!(r && r.cancelled)) showToastModern("Export impossible : " + ((r && r.error) || "?"), "err");
+}
+
+/* Trois issues : "nouveau", "remplacer" ou null (Annuler, Échap, clic à côté :
+   jamais « remplacer » par défaut). */
+function _profilChoixMode(ap, actif) {
+  return new Promise(resolve => {
+    const mods = (ap.fichiers || []).map(f => PROFIL_MODULES[f] || f).join(", ");
+    const ov = document.createElement("div");
+    ov.className = "ov";
+    ov.innerHTML = `<div class="modal" style="max-width:460px"><h2>Importer le profil « ${escHtml(ap.label || "Profil")} »</h2>
+      <p style="color:var(--txt2);font-size:13px;margin:0 0 6px">${ap.date ? "Exporté le " + escHtml(_finDateToFR(ap.date)) + ". " : ""}Contient : ${escHtml(mods)}.</p>
+      <p style="color:var(--txt2);font-size:13px;margin:0">Un nouvel utilisateur ne touche à rien de ce qui existe. Remplacer met ce profil à la place des données de ${escHtml(actif)}.</p>
+      <div class="mact"><button type="button" class="btn btn-ghost" data-r="">Annuler</button>
+        <button type="button" class="btn btn-ghost" data-r="remplacer" style="color:var(--r);border-color:var(--r)">Remplacer ${escHtml(actif)}</button>
+        <button type="button" class="btn btn-primary" data-r="nouveau">Nouvel utilisateur</button></div></div>`;
+    document.body.appendChild(ov);
+    let fini = false;
+    const fin = r => { if (fini) return; fini = true; ov.classList.remove("open"); setTimeout(() => ov.remove(), 0); resolve(r || null); };
+    ov.querySelectorAll("[data-r]").forEach(b => b.onclick = () => fin(b.dataset.r));
+    ov.addEventListener("click", e => { if (e.target === ov) fin(null); });
+    ov.addEventListener("keydown", e => { if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); fin(null); } });
+    ov.style.zIndex = 9700;
+    ov.classList.add("open");
+    setTimeout(() => ov.querySelector('[data-r="nouveau"]').focus(), 40);
+  });
+}
+
+async function profilImporter() {
+  const api = window.pywebview && window.pywebview.api;
+  if (!(api && api.profil_choisir)) { showToastModern("Import indisponible hors de l'app", "warn"); return; }
+  let ap = await api.profil_choisir();
+  if (!ap || ap.cancelled) return;
+  if (!ap.ok) { showToastModern(ap.error || "Fichier illisible", "err"); return; }
+  let mdp = "";
+  let texte = "Ce fichier a été protégé à l'export.";
+  while (ap.chiffre && !ap.label) {
+    mdp = await demander("Mot de passe du profil", "", { type: "password", ok: "Ouvrir", texte });
+    if (mdp === null) return;
+    ap = await api.profil_apercu(mdp);
+    if (ap && ap.ok) break;
+    if (!(ap && ap.reason === "mot_de_passe")) { showToastModern((ap && ap.error) || "Fichier illisible", "err"); return; }
+    texte = ap.error;
+    ap = { chiffre: true };
+  }
+  const state = await _loadUsers();
+  const moi = state && state.users.find(u => u.slug === state.active);
+  const actif = (moi && moi.label) || "l'utilisateur actif";
+  const mode = await _profilChoixMode(ap, actif);
+  if (!mode) return;
+  if (mode === "remplacer" && !(await confirmer(`Remplacer toutes les données de ${actif} ?`, {
+      texte: "Son nom et son code PIN restent. Une archive de son état actuel est gardée dans son dossier (backups, avant_import).",
+      ok: "Remplacer" }))) return;
+  await _gelerEnregistrements();   // rien ne doit réécrire l'ancien état par-dessus l'import
+  const r = await api.profil_importer(mode, mdp);
+  if (!(r && r.ok)) {
+    _degelerEnregistrements();
+    showToastModern("Import impossible : " + ((r && r.error) || "?"), "err");
+    return;
+  }
+  const aReconnecter = (r.fichiers || []).filter(f => PROFIL_CONNEXIONS.includes(f)).map(f => PROFIL_MODULES[f]);
+  if (aReconnecter.length)
+    await confirmer("Profil importé", { annuler: false, ok: "Continuer",
+      texte: `S'il vient d'un autre ordinateur, reconnecte ${aReconnecter.join(", ")} : ` +
+             (aReconnecter.length > 1 ? "leurs codes ne se lisent que sur le PC où tu les as tapés."
+                                      : "son code ne se lit que sur le PC où tu l'as tapé.") });
+  else showToastModern("Profil importé — rechargement…", "ok");
+  location.reload();
 }
 
 /* — Hook persist pour declencher des notifs Windows sur gros mouvements — */
@@ -18457,6 +18570,9 @@ function finProcessRecurrences() {
       r.nextDue = r.startDate || _finDateToISO(today);
       mutated = true;
     }
+    // Suivi par les relevés : rien n'est créé (l'opération arrive par
+    // l'import). Seuls l'échéance et le dernier prix vu avancent (finAbo*)
+    if (r.amountMode === "suivi") { if (_finAboAvancer(r, today)) mutated = true; continue; }
     if (r.amountMode !== "fixed") continue;
     let due = _finParseISO(r.nextDue);
     while (due <= today) {
@@ -18788,6 +18904,7 @@ function finRenderTxList() {
     bandeau.innerHTML = nAc ? `<i class="ph ph-tag"></i> <span><b>${nAc}</b> opération${nAc > 1 ? "s" : ""} importée${nAc > 1 ? "s" : ""}
       attend${nAc > 1 ? "ent" : ""} une catégorie.</span> <button type="button" class="btn btn-ghost btn-sm" onclick="finVoirAClasser()">Les classer</button>` : "";
   }
+  finAboRenderBar();
   if (srcFilt) txs = txs.filter(tx => String(tx.sourceId)   === String(srcFilt));
   if (search) {
     txs = txs.filter(tx => {
@@ -19707,6 +19824,219 @@ async function finVoirAClasser() {
   if (carte) carte.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+/* ── Abonnements repérés (25/11/2026, docs/modules/comptes.md) ──
+   Une dépense au même libellé, une fois par mois, au moins 3 mois de suite
+   jusqu'au mois dernier, à ±5 jours du même jour et à ±10 % du même montant.
+   Aucune règle à écrire : on Suit (récurrent « suivi », qui ne crée rien :
+   l'opération arrive par l'import, sans doublon quand le prix change) ou on
+   écarte (F.abonnementsIgnores, la question ne revient plus). Une fois
+   suivi : hausse de prix et abonnement qui ne passe plus sont signalés. */
+const FIN_ABO = { mois: 3, jours: 5, ecart: 0.10, disparuJours: 62, hausseJours: 45 };
+function _finAboCle(label) { return finNorm(label).replace(/\s+/g, " "); }
+function _finMoisIdx(iso) { return (+iso.slice(0, 4)) * 12 + (+iso.slice(5, 7)) - 1; }
+function _finJoursDepuis(iso) { return Math.round((new Date() - _finParseISO(iso)) / 86400000); }
+
+/* Les dépenses d'un récurrent, de la plus ancienne à la plus récente */
+function _finAboTxs(r) {
+  const cle = _finAboCle(r.label);
+  return F.transactions.filter(t => t.type === "expense" && t.date &&
+    (t.recurrenceId === r.id || _finAboCle(t.label) === cle)).sort((a, b) => a.date.localeCompare(b.date));
+}
+
+/* Récurrent suivi : son échéance passe au mois suivant, et son montant suit
+   le dernier prix vu. Vrai si quelque chose a changé. */
+function _finAboAvancer(r, today) {
+  let change = false;
+  const der = _finAboTxs(r).pop();
+  if (der && Math.abs((Number(der.amount) || 0) - (Number(r.amount) || 0)) > 0.004) { r.amount = Number(der.amount); change = true; }
+  let due = _finParseISO(r.nextDue);
+  while (due <= today) { due = _finAdvanceDue(due, r); r.nextDue = _finDateToISO(due); change = true; }
+  return change;
+}
+
+function finAboCandidats() {
+  if (typeof F === "undefined" || !F) return [];
+  const ign = new Set(F.abonnementsIgnores || []);
+  const pris = new Set(F.recurrences.map(r => _finAboCle(r.label)));
+  const auj = new Date(), ajIdx = auj.getFullYear() * 12 + auj.getMonth();
+  const groupes = new Map();
+  for (const t of F.transactions) {
+    if (t.type !== "expense" || !t.date || t.recurrenceId || !(Number(t.amount) > 0)) continue;
+    const cle = _finAboCle(t.label);
+    if (!cle || ign.has(cle) || pris.has(cle) || ajIdx - _finMoisIdx(t.date) > 13) continue;
+    if (!groupes.has(cle)) groupes.set(cle, []);
+    groupes.get(cle).push(t);
+  }
+  const res = [];
+  for (const [cle, txs] of groupes) {
+    if (txs.length < FIN_ABO.mois) continue;
+    const parMois = new Map();
+    let double = false;
+    for (const t of txs) {
+      const m = _finMoisIdx(t.date);
+      if (parMois.has(m)) double = true; else parMois.set(m, t);
+    }
+    if (double) continue;                    // plusieurs fois par mois : courses, essence…
+    const mois = [...parMois.keys()].sort((a, b) => a - b);
+    const dernier = mois[mois.length - 1];
+    if (ajIdx - dernier > 1) continue;       // plus vu ni ce mois-ci ni le mois dernier
+    let k = mois.length - 1;
+    while (k > 0 && mois[k - 1] === mois[k] - 1) k--;
+    const suite = mois.slice(k).map(m => parMois.get(m));
+    if (suite.length < FIN_ABO.mois) continue;
+    const jours = suite.map(t => +t.date.slice(8, 10)).sort((a, b) => a - b);
+    const jour = jours[Math.floor(jours.length / 2)];
+    if (jours.some(j => Math.abs(j - jour) > FIN_ABO.jours)) continue;
+    const der = suite[suite.length - 1], montant = Number(der.amount);
+    if (suite.some(t => Math.abs(Number(t.amount) - montant) > montant * FIN_ABO.ecart)) continue;
+    res.push({ cle, label: der.label, montant, jour, n: suite.length, derniere: der.date,
+               categoryId: der.categoryId, subcategoryId: der.subcategoryId || null, sourceId: der.sourceId });
+  }
+  return res.sort((a, b) => b.montant - a.montant);
+}
+
+/* Ce qui demande un coup d'œil sur les abonnements suivis */
+function finAboAlertes() {
+  if (typeof F === "undefined" || !F) return [];
+  const res = [];
+  for (const r of F.recurrences) {
+    if (r.amountMode !== "suivi" || r.status === "paused") continue;
+    const txs = _finAboTxs(r), der = txs[txs.length - 1], av = txs[txs.length - 2];
+    if (!der) continue;
+    const depuis = _finJoursDepuis(der.date);
+    if (depuis > FIN_ABO.disparuJours) {
+      if (r.disparuVu !== der.id) res.push({ r, genre: "disparu", der });
+    } else if (av && Number(der.amount) > Number(av.amount) + 0.004 && depuis <= FIN_ABO.hausseJours && r.hausseVue !== der.id) {
+      res.push({ r, genre: "hausse", der, avant: Number(av.amount), apres: Number(der.amount) });
+    }
+  }
+  return res;
+}
+
+/* Total par mois des dépenses récurrentes actives (tuile, fenêtre) */
+function finAboTotalMois() {
+  const fact = { weekly: 52 / 12, quarterly: 1 / 3, yearly: 1 / 12 };
+  return F.recurrences.filter(r => r.type === "expense" && r.status !== "paused")
+    .reduce((s, r) => s + (Number(r.amount) || 0) * (fact[r.frequency] || 1), 0);
+}
+
+function _finAboTexteAlerte(a) {
+  return a.genre === "hausse"
+    ? `${_finEsc(a.r.label)} passe de ${finFmtAbs(a.avant)} à ${finFmtAbs(a.apres)} par mois.`
+    : `${_finEsc(a.r.label)} n'est plus passé depuis le ${_finDateToFR(a.der.date)} : résilié ?`;
+}
+
+function finAboRenderBar() {
+  const bar = document.getElementById("fin-abo-bar");
+  if (!bar) return;
+  const al = finAboAlertes(), cand = finAboCandidats();
+  bar.hidden = !al.length && !cand.length;
+  if (bar.hidden) { bar.innerHTML = ""; return; }
+  const txt = al.length === 1 && !cand.length ? _finAboTexteAlerte(al[0])
+    : cand.length && !al.length ? `Pilote a repéré <b>${cand.length}</b> dépense${cand.length > 1 ? "s" : ""} qui revien${cand.length > 1 ? "nent" : "t"} chaque mois.`
+    : `Abonnements : <b>${cand.length + al.length}</b> chose${cand.length + al.length > 1 ? "s" : ""} à regarder.`;
+  bar.innerHTML = `<i class="ph ph-repeat"></i> <span>${txt}</span> <button type="button" class="btn btn-ghost btn-sm" onclick="finAboOuvrir()">Voir</button>`;
+}
+
+function finAboOuvrir() {
+  let ov = document.getElementById("ov-fin-abos");
+  if (!ov) {
+    ov = document.createElement("div");
+    ov.className = "ov"; ov.id = "ov-fin-abos";
+    ov.innerHTML = `<div class="modal" style="max-width:620px"><h2>Mes abonnements</h2>
+      <div id="fin-abos-corps"></div>
+      <div class="mact"><button type="button" class="btn btn-ghost" onclick="closeOv('ov-fin-abos');finOpenRecurrences()">Tous les récurrents</button>
+        <button type="button" class="btn btn-primary" onclick="closeOv('ov-fin-abos')">Fermer</button></div></div>`;
+    ov.addEventListener("click", e => { if (e.target === ov) closeOv("ov-fin-abos"); });
+    document.body.appendChild(ov);
+  }
+  finAboRenderFenetre();
+  openOvTop("ov-fin-abos");
+}
+
+function finAboRenderFenetre() {
+  const corps = document.getElementById("fin-abos-corps");
+  if (!corps) return;
+  const cand = finAboCandidats(), al = finAboAlertes();
+  const suivis = F.recurrences.filter(r => r.type === "expense" && r.status !== "paused");
+  const ligne = (gauche, montant, actes) => `<div class="fin-abo-row"><div>${gauche}</div>
+    <span class="fin-tx-amount expense">${montant}</span><div class="fin-abo-acts">${actes}</div></div>`;
+  let h = `<p class="m-note" style="margin:0">Pilote repère les dépenses qui reviennent chaque mois (même libellé, à peu près le même jour et le même montant, ${FIN_ABO.mois} mois de suite). Suivre ne crée aucune opération : elles arrivent par tes relevés, et Pilote te prévient si le prix monte ou si l'abonnement ne passe plus.</p>`;
+  if (al.length) {
+    h += `<div class="fin-abo-sec">À vérifier</div>` + al.map((a, i) => ligne(
+      `<div class="fin-rec-name">${_finAboTexteAlerte(a)}</div>`,
+      "−" + finFmtAbs(a.genre === "hausse" ? a.apres : Number(a.r.amount) || 0),
+      a.genre === "hausse"
+        ? `<button type="button" class="btn btn-ghost btn-sm" onclick="finAboVu(${i})">J'ai vu</button>`
+        : `<button type="button" class="btn btn-ghost btn-sm" onclick="finAboVu(${i})">Toujours actif</button>
+           <button type="button" class="btn btn-primary btn-sm" onclick="finAboPause(${a.r.id})">Résilié</button>`)).join("");
+  }
+  if (cand.length) {
+    h += `<div class="fin-abo-sec">Repérés dans tes dépenses</div>` + cand.map((c, i) => {
+      const cat = finCatById(c.categoryId);
+      return ligne(`<div class="fin-rec-name">${_finEsc(c.label)}</div>
+        <div class="fin-rec-meta">${cat ? _finEsc(finCatIcon(cat) + " " + cat.name) + " · " : ""}vers le ${c.jour} du mois · ${c.n} mois de suite · dernier le ${_finDateToFR(c.derniere)}</div>`,
+        "−" + finFmtAbs(c.montant),
+        `<button type="button" class="btn btn-ghost btn-sm" onclick="finAboIgnorer(${i})">Pas un abonnement</button>
+         <button type="button" class="btn btn-primary btn-sm" onclick="finAboSuivre(${i})">Suivre</button>`);
+    }).join("");
+  }
+  h += `<div class="fin-abo-sec">Tes dépenses récurrentes · ${finFmtAbs(finAboTotalMois())} par mois</div>`;
+  h += suivis.length ? suivis.map(r => ligne(`<div class="fin-rec-name">${_finEsc(r.label)}</div>
+      <div class="fin-rec-meta">${_finFreqLabel(r)} · ${r.amountMode === "suivi" ? "suivi par les relevés" : r.amountMode === "fixed" ? "créé chaque mois" : "à valider"} · prochain le ${_finDateToFR(r.nextDue)}</div>`,
+      "−" + finFmtAbs(Number(r.amount) || 0), "")).join("")
+    : `<div class="fin-empty">Aucune pour l'instant.</div>`;
+  corps.innerHTML = h;
+}
+
+function _finAboApres() {
+  finPersist();
+  finRenderAll();
+  if (document.getElementById("ov-fin-abos")) finAboRenderFenetre();
+  if (typeof dashRender === "function") dashRender();
+}
+
+function finAboSuivre(i) {
+  const c = finAboCandidats()[i];
+  if (!c) return;
+  const r = { id: finUid("rec"), label: c.label, amount: c.montant, amountMode: "suivi", type: "expense",
+              categoryId: c.categoryId, subcategoryId: c.subcategoryId, sourceId: c.sourceId, note: "",
+              frequency: "monthly-dom", dayOfMonth: c.jour, startDate: c.derniere, status: "active",
+              createdAt: new Date().toISOString() };
+  r.nextDue = _finDateToISO(_finAdvanceDue(_finParseISO(c.derniere), r));
+  F.recurrences.push(r);
+  _finAboApres();
+  showToastModern(c.label + " : suivi", "ok");
+}
+
+function finAboIgnorer(i) {
+  const c = finAboCandidats()[i];
+  if (!c) return;
+  F.abonnementsIgnores = (F.abonnementsIgnores || []).concat(c.cle);
+  _finAboApres();
+}
+
+function finAboVu(i) {
+  const a = finAboAlertes()[i];
+  if (!a) return;
+  if (a.genre === "hausse") a.r.hausseVue = a.der.id; else a.r.disparuVu = a.der.id;
+  _finAboApres();
+}
+
+function finAboPause(id) {
+  const r = finRecById(id);
+  if (!r) return;
+  r.status = "paused";
+  _finAboApres();
+  showToastModern(r.label + " : mis en pause (Tous les récurrents pour le réactiver)", "ok");
+}
+
+async function dashVoirAbos() {
+  if (!_finBootstrapped && typeof finBootstrap === "function") await finBootstrap();
+  if (typeof F === "undefined" || !F) { showToastModern("Mes comptes n'est pas encore chargé", "warn"); return; }
+  finAboOuvrir();
+}
+
 async function dashImporterReleve() {
   if (!_finBootstrapped && typeof finBootstrap === "function") await finBootstrap();
   if (typeof F === "undefined" || !F) { showToastModern("Mes comptes n'est pas encore chargé", "warn"); return; }
@@ -20202,7 +20532,7 @@ function finRenderRecsList() {
         <div class="fin-rec-name">${r.type === "income" ? "+" : "−"} ${_finEsc(r.label)}</div>
         <div class="fin-rec-meta">${cat ? _finEsc(finCatIcon(cat) + " " + cat.name) : "—"} · ${_finFreqLabel(r)}</div>
       </div>
-      <span class="fin-rec-pill ${r.amountMode}">${r.amountMode === "fixed" ? "Fixe" : "Variable"}</span>
+      <span class="fin-rec-pill ${r.amountMode}">${r.amountMode === "fixed" ? "Fixe" : r.amountMode === "suivi" ? "Suivi" : "Variable"}</span>
       <span class="fin-tx-source">Prochain : ${_finDateToFR(r.nextDue)}</span>
       <span class="fin-tx-amount ${r.type}">${(r.type === "income" ? "+" : "−") + finFmtAbs(Number(r.amount) || 0)}</span>
       <div style="display:flex;gap:4px">
@@ -27580,6 +27910,26 @@ const DASH_WIDGETS = [
                        onclick="event.stopPropagation();dashImporterReleve()"><i class="ph ph-download-simple"></i> Importer un relevé</button>` +
                     (n ? `<button type="button" class="btn btn-ghost btn-sm"
                        onclick="event.stopPropagation();finVoirAClasser()">Classer</button>` : "") + `</span>` };
+    },
+  },
+  {
+    // Abonnements repérés (finAbo*) : total par mois des dépenses récurrentes,
+    // et ce qui demande un coup d'œil (repérés, hausse, plus passé)
+    id: "fin-abos", label: "Mes abonnements", module: "Comptes", tab: "fin-month",
+    render() {
+      if (typeof F === "undefined" || !F) return null;
+      const n = F.recurrences.filter(r => r.type === "expense" && r.status !== "paused").length;
+      const al = finAboAlertes(), cand = finAboCandidats();
+      if (!n && !cand.length) return null;
+      const hausse = al.find(a => a.genre === "hausse");
+      const sub = hausse ? hausse.r.label + " : +" + finFmtAbs(hausse.apres - hausse.avant) + " par mois"
+        : al.length ? al[0].r.label + " n'est plus passé"
+        : cand.length ? cand.length + " repéré" + (cand.length > 1 ? "s" : "") + " dans tes dépenses"
+        : n + " dépense" + (n > 1 ? "s" : "") + " récurrente" + (n > 1 ? "s" : "");
+      return { lbl: "Mes abonnements", val: finFmtAbs(finAboTotalMois()) + " / mois", sub,
+               go: "Voir mes comptes",
+               viz: `<button type="button" class="btn btn-ghost btn-sm"
+                       onclick="event.stopPropagation();dashVoirAbos()">${al.length || cand.length ? "À regarder" : "Voir"}</button>` };
     },
   },
   {
